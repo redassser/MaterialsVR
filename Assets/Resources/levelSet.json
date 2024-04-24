@@ -1,0 +1,150 @@
+{
+    "Levels": [
+        {
+            "type": "MCSM",
+            "title": "How many atoms are contained within the Simple Cubic Cell?",
+            "Model": "SC",
+            "options": [
+                { 
+                    "Button": "A",
+                    "Text": "10",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "B",
+                    "Text": "8",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "C",
+                    "Text": "4",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "2",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "A",
+                    "Text": "1",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 4
+        },
+        {
+            "type": "MCSM",
+            "title": "How many atoms are contained within the Body Centered Cubic Cell?",
+            "Model": "BCC",
+            "options": [
+                { 
+                    "Button": "A",
+                    "Text": "9",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "B",
+                    "Text": "5",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "C",
+                    "Text": "3",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "2",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "A",
+                    "Text": "1",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 3
+        },
+        {
+            "type": "MCSM",
+            "title": "How many atoms are contained within the Face Centered Cubic Cell?",
+            "Model": "FCC",
+            "options": [
+                { 
+                    "Button": "A",
+                    "Text": "14",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "B",
+                    "Text": "8",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "C",
+                    "Text": "4",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "2",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "A",
+                    "Text": "1",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 2
+        },
+        {
+            "type": "MCSM",
+            "title": "What kind of Cubic is this?",
+            "Model": "SC",
+            "options": [
+                { 
+                    "Button": "A",
+                    "Text": "Simple Cubic",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "B",
+                    "Text": "Face Centered Cubic",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "3",
+                    "Text": "Body Centered Cubic",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 0
+        },
+        {
+            "type": "MCAM",
+            "title": "Pick the one that is that one",
+            "Model": "FCC",
+            "options": [
+                { 
+                    "Button": "1",
+                    "Text": "First",
+                    "Model": "BCC"
+                },
+                { 
+                    "Button": "2",
+                    "Text": "Second",
+                    "Model": "FCC"
+                }
+            ],
+            "correctIndex": 1
+        },
+        {
+            "type": "PD",
+            "title": "Create a [1, 1, 0] plane",
+            "Model": "C",
+            "correctPlane": [1,1,0]
+        }
+    ]
+}
