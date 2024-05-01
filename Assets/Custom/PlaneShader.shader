@@ -1,4 +1,4 @@
-Shader "Unlit/UnitShader"
+Shader "Unlit/PlaneShader"
 {
 	Properties{
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
@@ -6,8 +6,11 @@ Shader "Unlit/UnitShader"
 		[Toggle] _Unitize("Make unit?", Float) = 1
 	}
 	Subshader{
+		Tags{ "Queue" = "Transparent" "IgnoreProjector" = "False" "RenderType" = "Transparent" }
+		Blend SrcAlpha OneMinusSrcAlpha
+		ZWrite Off
+		Cull off
 		Pass {
-			Tags {"RenderType"="Opaque"}
 			CGPROGRAM
 
 			#pragma vertex customVertex
@@ -23,23 +26,24 @@ Shader "Unlit/UnitShader"
 				float4 pos : SV_POSITION;
 				float3 local : TEX_COORD0;
 				float3 normal : TEX_COORD1;
+				float4 ogpos : FLOAT4;
 			};
 
 			Data customVertex(float4 pos : POSITION, float3 normal : NORMAL) {
 				Data d;
 				d.local = pos.xyz;
-				if (_Unitize > 0) {
-					pos.x = clamp(pos.x, -0.5, 0.5);
-					pos.y = clamp(pos.y, -0.5, 0.5);
-					pos.z = clamp(pos.z, -0.5, 0.5);
-				}
 				d.normal = UnityObjectToWorldNormal(normal);
 				d.pos = UnityObjectToClipPos(pos);
+				d.ogpos = pos;
 				return d;
 			}
 			float4 customFragment(Data d) : SV_TARGET{
 				d.normal = normalize(d.normal);
-				return float4(_Color + d.normal, 1) * _Color;
+				float4 color = tex2D(_MainTex, d.local) * _Color;
+				if (d.ogpos.x > 0.501 || d.ogpos.x < -0.501 || d.ogpos.y > 0.501 || d.ogpos.y < -0.501 || d.ogpos.z > 0.501 || d.ogpos.z < -0.501) {
+					color.a = 0;
+				}
+				return color;
 			}
 
 			ENDCG

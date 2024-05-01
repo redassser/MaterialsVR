@@ -123,27 +123,21 @@
             "correctIndex": 0
         },
         {
-            "type": "MCAM",
-            "title": "Pick the one that is that one",
-            "Model": "FCC",
-            "options": [
-                { 
-                    "Button": "1",
-                    "Text": "First",
-                    "Model": "BCC"
-                },
-                { 
-                    "Button": "2",
-                    "Text": "Second",
-                    "Model": "FCC"
-                }
-            ],
-            "correctIndex": 1
+            "type": "PD",
+            "title": "Create a [1, 0, 0] plane",
+            "Model": "D",
+            "correctPlane": [1,0,0]
+        },
+        {
+            "type": "PD",
+            "title": "Create a [-1, 0, 1] plane",
+            "Model": "D",
+            "correctPlane": [-1,0,1]
         },
         {
             "type": "PD",
             "title": "Create a [1, 1, 0] plane",
-            "Model": "C",
+            "Model": "D",
             "correctPlane": [1,1,0]
         }
     ]

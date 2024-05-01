@@ -12,6 +12,7 @@ public class ContentManager : MonoBehaviour
     public GameObject exampleObject;
     public Transform pedestal;
 
+    public int[] currentCorrectPlane = new int[3];
     public int currentCorrect;
     public string currentType;
     private List<OptionPanelController> currentPanels = new List<OptionPanelController>();
@@ -42,6 +43,9 @@ public class ContentManager : MonoBehaviour
     private GameObject SpawnModel(string model) {
         int type;
         switch(model) {
+            case "D":
+                type = 4;
+                break;
             case "FCC":
                 type = 3;
                 break;
@@ -226,16 +230,28 @@ public class ContentManager : MonoBehaviour
     // Single Model with line drawing that can be used to make planes to intersect the model at the behest of the text question
     private void setPD(Level level) {
         currentType = level.type;
-        currentCorrect = level.correctIndex;
+        currentCorrectPlane = level.correctPlane;
 
         title.text = level.title;
         resetButton.SetActive(true);
         exampleObject = SpawnModel(level.Model);
+        OptionPanelController temppanel = Instantiate(panelPrefab, transform, false);
+        temppanel.color = Color.green;
+        temppanel.optionButton.onClick.AddListener(delegate { answerSelect(0); });
+        temppanel.ButtonText = "A";
+        temppanel.OptionText = "Draw the ["+level.correctPlane[0]+", "+level.correctPlane[1]+", "+ level.correctPlane[2]+"] plane";
+        temppanel.ModelOption = "D";
+        Vector3 temp = temppanel.GetComponent<RectTransform>().anchoredPosition;
+        temp.y = 750 - 220;
+        temppanel.GetComponent<RectTransform>().anchoredPosition = temp;
+        currentPanels.Add(temppanel);
         Invoke("resetExample", 0.5f);
 
     }
     private void checkPD() {
-        if (currentCorrect != 0) {
+        int[] ints = new int[3];
+        ints = exampleObject.GetComponentInChildren<planeAdj>().planeType;
+        if (currentCorrectPlane[0] == ints[0] && currentCorrectPlane[1] == ints[1] && currentCorrectPlane[2] == ints[2]) {
             CorrectAnswer(true);
         } else {
             CorrectAnswer(false);
@@ -327,7 +343,7 @@ public class ContentManager : MonoBehaviour
         public string Model;
         public Option[] options;
         public int correctIndex;
-        public int[] correntPlane;
+        public int[] correctPlane;
     }
     [System.Serializable]
     public class LevelSet
