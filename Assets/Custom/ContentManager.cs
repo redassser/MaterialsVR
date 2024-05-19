@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ContentManager : MonoBehaviour
 {
-    public TextAsset levelSetFile;
     public TMPro.TextMeshProUGUI title;
     public GameObject[] prefabs; //0 cube, 1 SC, 2 BCC, 3 FCC
     public Material[] correctIncorrect;
@@ -16,15 +15,23 @@ public class ContentManager : MonoBehaviour
     public int currentCorrect;
     public string currentType;
     private List<OptionPanelController> currentPanels = new List<OptionPanelController>();
+    public int numCorrect = 0;
+    public int numTotal = 0;
     private int currentLevel = 0;
     private LevelSet levelset;
+    private TextAsset[] FSitems;
 
     public OptionPanelController panelPrefab;
+    public GameObject gradepanel;
+    private List<GameObject> panels = new List<GameObject>();
+    public GameObject panelLevel;
 
     // Correct / Incorrect addressing
     private void CorrectAnswer(bool isCorrect) {
+        numTotal++;
         if(isCorrect) {
             Color green = new Color(0.1921119f, 0.7547169f, 0.1245995f);
+            numCorrect++;
             correctIncorrect[0].SetColor("_EmissionColor", green);
         } else {
             Color red = new Color(0.8490566f, 0.1161445f, 0.1161445f);
@@ -62,10 +69,11 @@ public class ContentManager : MonoBehaviour
         return Instantiate(prefabs[type]);
     }
     public void resetExample() {
-        exampleObject.transform.parent = pedestal;
-        exampleObject.transform.localPosition = new Vector3(0, 1.29f, 0f);
-        exampleObject.transform.localRotation = Quaternion.identity;
-        exampleObject.transform.localScale = new Vector3(0.66f, 0.573913f, 0.66f);
+        exampleObject.transform.parent = null;
+        Vector3 h = pedestal.position; h.y += 1.5f;
+        exampleObject.transform.localPosition = h;
+        exampleObject.transform.localRotation = Quaternion.Euler(new Vector3(0f,110f,0f));
+        exampleObject.transform.localScale = new Vector3(0.66f, 0.66f, 0.66f);
     }
 
     // MCMM ( Multiple Choice Multiple Model )
@@ -116,7 +124,7 @@ public class ContentManager : MonoBehaviour
         title.text = level.title;
         resetButton.SetActive(true);
         exampleObject = SpawnModel(level.Model);
-        Invoke("resetExample", 0.5f);
+        Invoke("resetExample", 0.125f);
 
         for (int ind = 0; ind < level.options.Length; ind++) {
             OptionPanelController temppanel = Instantiate(panelPrefab, transform, false);
@@ -160,7 +168,7 @@ public class ContentManager : MonoBehaviour
         title.text = level.title;
         resetButton.SetActive(true);
         exampleObject = SpawnModel(level.Model);
-        Invoke("resetExample", 0.5f);
+        Invoke("resetExample", 0.125f);
 
         for (int ind = 0; ind < level.options.Length; ind++) {
             OptionPanelController temppanel = Instantiate(panelPrefab, transform, false);
@@ -204,7 +212,7 @@ public class ContentManager : MonoBehaviour
         title.text = level.title;
         resetButton.SetActive(true);
         exampleObject = SpawnModel(level.Model);
-        Invoke("resetExample", 0.5f);
+        Invoke("resetExample", 0.125f);
 
     }
     private void checkPM() {
@@ -240,18 +248,19 @@ public class ContentManager : MonoBehaviour
         temppanel.optionButton.onClick.AddListener(delegate { answerSelect(0); });
         temppanel.ButtonText = "A";
         temppanel.OptionText = "Draw the ["+level.correctPlane[0]+", "+level.correctPlane[1]+", "+ level.correctPlane[2]+"] plane";
-        temppanel.ModelOption = "D";
+        temppanel.ModelOption = "None";
         Vector3 temp = temppanel.GetComponent<RectTransform>().anchoredPosition;
         temp.y = 750 - 220;
         temppanel.GetComponent<RectTransform>().anchoredPosition = temp;
         currentPanels.Add(temppanel);
-        Invoke("resetExample", 0.5f);
+        Invoke("resetExample", 0.125f);
 
     }
     private void checkPD() {
-        int[] ints = new int[3];
+        int[] ints;
         ints = exampleObject.GetComponentInChildren<planeAdj>().planeType;
-        if (currentCorrectPlane[0] == ints[0] && currentCorrectPlane[1] == ints[1] && currentCorrectPlane[2] == ints[2]) {
+        if ((currentCorrectPlane[0] == ints[0] && currentCorrectPlane[1] == ints[1] && currentCorrectPlane[2] == ints[2]) ||
+            (currentCorrectPlane[0] ==-ints[0] && currentCorrectPlane[1] ==-ints[1] && currentCorrectPlane[2] ==-ints[2])) { // check negative as well
             CorrectAnswer(true);
         } else {
             CorrectAnswer(false);
@@ -272,7 +281,7 @@ public class ContentManager : MonoBehaviour
     // Selecting Answer
     public void setLevel() {
         if (currentLevel == levelset.Levels.Length) {
-            title.text = "No more levels";
+            endLevel();
             return;
         }
 
@@ -319,13 +328,42 @@ public class ContentManager : MonoBehaviour
         currentLevel++;
         Invoke("setLevel", 3);
     }
+    public void endLevel() {
+        gradepanel.SetActive(true);
+        title.text = "No more levels";
+        Debug.Log(numCorrect); Debug.Log(numTotal);
+        gradepanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Grade: " + numCorrect+" / "+numTotal;
+        numCorrect = 0; numTotal = 0; currentLevel = 0;
+    }
+    public void LevelSelect() {
+        gradepanel.SetActive(false);
+        FSitems = Resources.LoadAll<TextAsset>("Levels");
+        int ind = 0;
+        title.text = "Select Level";
+        foreach(TextAsset i in FSitems) {
+            GameObject temppanel = Instantiate(panelLevel, transform, false);
+            temppanel.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(delegate { selectLevel(i); });
+            temppanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = i.name;
+            Vector3 temp = temppanel.GetComponent<RectTransform>().anchoredPosition;
+            temp.y = 750 - 100 * ind; ind++;
+            temppanel.GetComponent<RectTransform>().anchoredPosition = temp;
+            panels.Add(temppanel);
+        }
+    }
+    public void selectLevel(TextAsset file) {
+        foreach (GameObject op in panels) {
+            Destroy(op);
+        }
+        currentPanels.Clear();
+        levelset = LevelSet.createFromJson(file.ToString());
+        setLevel();
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        levelSetFile = Resources.Load("levelSet") as TextAsset;
-        levelset = LevelSet.createFromJson(levelSetFile.ToString());
-        setLevel();
+        gradepanel.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(delegate { LevelSelect(); });
+        LevelSelect();
     }
 
     [System.Serializable]
