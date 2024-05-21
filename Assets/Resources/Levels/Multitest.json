@@ -1,0 +1,80 @@
+{
+    "Levels": [
+        {
+            "Questions": [
+                {
+                    "type": "MCSM",
+                    "title": "How many atoms are contained within the Simple Cubic Cell?",
+                    "Model": "SC",
+                    "options": [
+                        { 
+                            "Button": "A",
+                            "Text": "10",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "B",
+                            "Text": "8",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "C",
+                            "Text": "4",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "D",
+                            "Text": "2",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "A",
+                            "Text": "1",
+                            "Model": "None"
+                        }
+                    ],
+                    "correctIndex": 4
+                },
+                {
+                    "type": "MCSM",
+                    "title": "How many atoms are contained within the Body Centered Cubic Cell?",
+                    "Model": "BCC",
+                    "options": [
+                        { 
+                            "Button": "A",
+                            "Text": "9",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "B",
+                            "Text": "5",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "C",
+                            "Text": "3",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "D",
+                            "Text": "2",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "A",
+                            "Text": "1",
+                            "Model": "None"
+                        }
+                    ],
+                    "correctIndex": 3
+                },
+                {
+                    "type": "PD",
+                    "title": "Create a [1, 0, 0] plane",
+                    "Model": "D",
+                    "correctPlane": [1,0,0]
+                }
+            ]
+        }
+    ]
+}

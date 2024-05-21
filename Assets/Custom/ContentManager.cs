@@ -9,7 +9,7 @@ public class ContentManager : MonoBehaviour
     public Material[] correctIncorrect;
     public GameObject resetButton;
     public GameObject exampleObject;
-    public Transform pedestal;
+    public Transform holder;
 
     public int[] currentCorrectPlane = new int[3];
     public int currentCorrect;
@@ -26,12 +26,23 @@ public class ContentManager : MonoBehaviour
     private List<GameObject> panels = new List<GameObject>();
     public GameObject panelLevel;
 
+    public bool isMain = false;
+    public GameObject holderinstant;
+    public ContentManager main;
+    public List<ContentManager> nonmain = new List<ContentManager>();
+    public int an = 0;
+
+    public void selfDestruct() {
+        Destroy(holder.gameObject);
+    }
+
     // Correct / Incorrect addressing
     private void CorrectAnswer(bool isCorrect) {
-        numTotal++;
+        main.numTotal++;
+        main.an++;
         if(isCorrect) {
             Color green = new Color(0.1921119f, 0.7547169f, 0.1245995f);
-            numCorrect++;
+            main.numCorrect++;
             correctIncorrect[0].SetColor("_EmissionColor", green);
         } else {
             Color red = new Color(0.8490566f, 0.1161445f, 0.1161445f);
@@ -69,29 +80,27 @@ public class ContentManager : MonoBehaviour
         return Instantiate(prefabs[type]);
     }
     public void resetExample() {
-        exampleObject.transform.parent = null;
-        Vector3 h = pedestal.position; h.y += 1.5f;
-        exampleObject.transform.localPosition = h;
-        exampleObject.transform.localRotation = Quaternion.Euler(new Vector3(0f,110f,0f));
-        exampleObject.transform.localScale = new Vector3(0.66f, 0.66f, 0.66f);
+        exampleObject.transform.parent = holder;
+        exampleObject.transform.localPosition = new Vector3(-1.1f,0,0);
+        exampleObject.transform.localRotation = Quaternion.Euler(new Vector3(0f,0f,0f));
+        exampleObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
     }
 
     // MCMM ( Multiple Choice Multiple Model )
     // Multiple choice menu where each has a small model that can be inspected, with a single text question
-    private void setMCMM(Level level) {
-        currentType = level.type;
-        currentCorrect = level.correctIndex;
+    private void setMCMM(Question q) {
+        currentCorrect = q.correctIndex;
 
-        title.text = level.title;
+        title.text = q.title;
 
-        for (int ind = 0; ind < level.options.Length; ind++) {
+        for (int ind = 0; ind < q.options.Length; ind++) {
             OptionPanelController temppanel = Instantiate(panelPrefab, transform, false);
             temppanel.optionButton.onClick.AddListener(delegate { answerSelect(temppanel.index); });
             temppanel.color = Random.ColorHSV();
             temppanel.index = ind;
-            temppanel.ButtonText = level.options[ind].Button;
-            temppanel.OptionText = level.options[ind].Text;
-            temppanel.ModelOption = level.options[ind].Model;
+            temppanel.ButtonText = q.options[ind].Button;
+            temppanel.OptionText = q.options[ind].Text;
+            temppanel.ModelOption = q.options[ind].Model;
             Vector3 temp = temppanel.GetComponent<RectTransform>().anchoredPosition;
             temp.y = 750 - 220 * ind;
             temppanel.GetComponent<RectTransform>().anchoredPosition = temp;
@@ -117,23 +126,22 @@ public class ContentManager : MonoBehaviour
 
     // MCSM ( Multiple Choice Single Model )
     // Multiple choice menu where there is only one large model that can be inspected, associated with a text question
-    private void setMCSM(Level level) {
-        currentType = level.type;
-        currentCorrect = level.correctIndex;
+    private void setMCSM(Question q) {
+        currentCorrect = q.correctIndex;
 
-        title.text = level.title;
+        title.text = q.title;
         resetButton.SetActive(true);
-        exampleObject = SpawnModel(level.Model);
+        exampleObject = SpawnModel(q.Model);
         Invoke("resetExample", 0.125f);
 
-        for (int ind = 0; ind < level.options.Length; ind++) {
+        for (int ind = 0; ind < q.options.Length; ind++) {
             OptionPanelController temppanel = Instantiate(panelPrefab, transform, false);
             temppanel.optionButton.onClick.AddListener(delegate { answerSelect(temppanel.index); });
             temppanel.color = Random.ColorHSV();
             temppanel.index = ind;
-            temppanel.ButtonText = level.options[ind].Button;
-            temppanel.OptionText = level.options[ind].Text;
-            temppanel.ModelOption = level.options[ind].Model;
+            temppanel.ButtonText = q.options[ind].Button;
+            temppanel.OptionText = q.options[ind].Text;
+            temppanel.ModelOption = q.options[ind].Model;
             Vector3 temp = temppanel.GetComponent<RectTransform>().anchoredPosition;
             temp.y = 750 - 220 * ind;
             temppanel.GetComponent<RectTransform>().anchoredPosition = temp;
@@ -161,23 +169,22 @@ public class ContentManager : MonoBehaviour
 
     // MCAM ( Multiple Choice All Model )
     // Multiple choice menu where each has a small model that can be inspected, with a single text question that also has an associated model
-    private void setMCAM(Level level) {
-        currentType = level.type;
-        currentCorrect = level.correctIndex;
+    private void setMCAM(Question q) {
+        currentCorrect = q.correctIndex;
 
-        title.text = level.title;
+        title.text = q.title;
         resetButton.SetActive(true);
-        exampleObject = SpawnModel(level.Model);
+        exampleObject = SpawnModel(q.Model);
         Invoke("resetExample", 0.125f);
 
-        for (int ind = 0; ind < level.options.Length; ind++) {
+        for (int ind = 0; ind < q.options.Length; ind++) {
             OptionPanelController temppanel = Instantiate(panelPrefab, transform, false);
             temppanel.color = Random.ColorHSV();
             temppanel.optionButton.onClick.AddListener(delegate { answerSelect(temppanel.index); });
             temppanel.index = ind;
-            temppanel.ButtonText = level.options[ind].Button;
-            temppanel.OptionText = level.options[ind].Text;
-            temppanel.ModelOption = level.options[ind].Model;
+            temppanel.ButtonText = q.options[ind].Button;
+            temppanel.OptionText = q.options[ind].Text;
+            temppanel.ModelOption = q.options[ind].Model;
             Vector3 temp = temppanel.GetComponent<RectTransform>().anchoredPosition;
             temp.y = 750 - 220 * ind;
             temppanel.GetComponent<RectTransform>().anchoredPosition = temp;
@@ -205,13 +212,12 @@ public class ContentManager : MonoBehaviour
 
     // PM ( Plane Move )
     // Single Model with another associated plane that can be dragged to intersect the model at the behest of the text question
-    private void setPM(Level level) {
-        currentType = level.type;
-        currentCorrect = level.correctIndex;
+    private void setPM(Question q) {
+        currentCorrect = q.correctIndex;
 
-        title.text = level.title;
+        title.text = q.title;
         resetButton.SetActive(true);
-        exampleObject = SpawnModel(level.Model);
+        exampleObject = SpawnModel(q.Model);
         Invoke("resetExample", 0.125f);
 
     }
@@ -236,18 +242,17 @@ public class ContentManager : MonoBehaviour
 
     // PD ( Plane Draw )
     // Single Model with line drawing that can be used to make planes to intersect the model at the behest of the text question
-    private void setPD(Level level) {
-        currentType = level.type;
-        currentCorrectPlane = level.correctPlane;
+    private void setPD(Question q) {
+        currentCorrectPlane = q.correctPlane;
 
-        title.text = level.title;
+        title.text = q.title;
         resetButton.SetActive(true);
-        exampleObject = SpawnModel(level.Model);
+        exampleObject = SpawnModel(q.Model);
         OptionPanelController temppanel = Instantiate(panelPrefab, transform, false);
         temppanel.color = Color.green;
         temppanel.optionButton.onClick.AddListener(delegate { answerSelect(0); });
         temppanel.ButtonText = "A";
-        temppanel.OptionText = "Draw the ["+level.correctPlane[0]+", "+level.correctPlane[1]+", "+ level.correctPlane[2]+"] plane";
+        temppanel.OptionText = "Draw the ["+q.correctPlane[0]+", "+q.correctPlane[1]+", "+ q.correctPlane[2]+"] plane";
         temppanel.ModelOption = "None";
         Vector3 temp = temppanel.GetComponent<RectTransform>().anchoredPosition;
         temp.y = 750 - 220;
@@ -286,25 +291,37 @@ public class ContentManager : MonoBehaviour
         }
 
         Level level = levelset.Levels[currentLevel];
-        currentType = level.type;
 
-        switch (level.type) {
-            case "MCMM":
-                setMCMM(level);
-                break;
-            case "MCSM":
-                setMCSM(level);
-                break;
-            case "MCAM":
-                setMCAM(level);
-                break;
-            case "PM":
-                setPM(level);
-                break;
-            case "PD":
-                setPD(level);
-                break;
-        }
+        for (int i=0;i<level.Questions.Length;i++) {
+            ContentManager cm;
+            if (i == 0) {
+                cm = this;
+            } else {
+                cm = Instantiate(holderinstant).GetComponentInChildren<ContentManager>();
+                nonmain.Add(cm);
+            }
+            cm.main = this;
+            Question tq = level.Questions[i];
+            cm.currentType = tq.type;
+
+            switch (tq.type) {
+                case "MCMM":
+                    cm.setMCMM(tq);
+                    break;
+                case "MCSM":
+                    cm.setMCSM(tq);
+                    break;
+                case "MCAM":
+                    cm.setMCAM(tq);
+                    break;
+                case "PM":
+                    cm.setPM(tq);
+                    break;
+                case "PD":
+                    cm.setPD(tq);
+                    break;
+            }
+        }   
     }
     public void answerSelect(int ind) {
 
@@ -325,17 +342,24 @@ public class ContentManager : MonoBehaviour
                 checkPD();
                 break;
         }
-        currentLevel++;
-        Invoke("setLevel", 3);
+        Debug.Log(main.an);
+        Debug.Log(main.levelset.Levels[currentLevel].Questions.Length);
+        if (main.an == main.levelset.Levels[currentLevel].Questions.Length) {
+            main.currentLevel++;
+            main.Invoke("setLevel", 3);
+        } 
     }
     public void endLevel() {
         gradepanel.SetActive(true);
         title.text = "No more levels";
-        Debug.Log(numCorrect); Debug.Log(numTotal);
         gradepanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Grade: " + numCorrect+" / "+numTotal;
-        numCorrect = 0; numTotal = 0; currentLevel = 0;
+        numCorrect = 0; numTotal = 0; currentLevel = 0; an = 0;
     }
     public void LevelSelect() {
+        foreach(ContentManager cm in nonmain) {
+            cm.selfDestruct();
+        }
+        nonmain.Clear();
         gradepanel.SetActive(false);
         FSitems = Resources.LoadAll<TextAsset>("Levels");
         int ind = 0;
@@ -352,7 +376,7 @@ public class ContentManager : MonoBehaviour
     }
     public void selectLevel(TextAsset file) {
         foreach (GameObject op in panels) {
-            Destroy(op);
+            op.SetActive(false);
         }
         currentPanels.Clear();
         levelset = LevelSet.createFromJson(file.ToString());
@@ -362,6 +386,7 @@ public class ContentManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (!isMain) return;
         gradepanel.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(delegate { LevelSelect(); });
         LevelSelect();
     }
@@ -374,7 +399,7 @@ public class ContentManager : MonoBehaviour
         public string Model;
     }
     [System.Serializable]
-    public class Level
+    public class Question
     {
         public string type;
         public string title;
@@ -382,6 +407,11 @@ public class ContentManager : MonoBehaviour
         public Option[] options;
         public int correctIndex;
         public int[] correctPlane;
+    }
+    [System.Serializable]
+    public class Level
+    {
+        public Question[] Questions;
     }
     [System.Serializable]
     public class LevelSet

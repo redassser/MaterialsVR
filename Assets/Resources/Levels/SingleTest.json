@@ -1,0 +1,41 @@
+{
+    "Levels": [
+        {
+            "Questions": [
+                {
+                    "type": "MCSM",
+                    "title": "How many atoms are contained within the Simple Cubic Cell?",
+                    "Model": "SC",
+                    "options": [
+                        { 
+                            "Button": "A",
+                            "Text": "10",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "B",
+                            "Text": "8",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "C",
+                            "Text": "4",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "D",
+                            "Text": "2",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "A",
+                            "Text": "1",
+                            "Model": "None"
+                        }
+                    ],
+                    "correctIndex": 4
+                }
+            ]
+        }
+    ]
+}
