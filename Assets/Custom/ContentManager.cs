@@ -6,7 +6,7 @@ public class ContentManager : MonoBehaviour
 {
     public TMPro.TextMeshProUGUI title;
     public GameObject[] prefabs; //0 cube, 1 SC, 2 BCC, 3 FCC
-    public Material[] correctIncorrect;
+    public Renderer[] correctIncorrect;
     public GameObject resetButton;
     public GameObject exampleObject;
     public Transform holder;
@@ -18,6 +18,7 @@ public class ContentManager : MonoBehaviour
     public int numCorrect = 0;
     public int numTotal = 0;
     private int currentLevel = 0;
+    public bool checkedf = false;
     private LevelSet levelset;
     private TextAsset[] FSitems;
 
@@ -43,18 +44,28 @@ public class ContentManager : MonoBehaviour
         if(isCorrect) {
             Color green = new Color(0.1921119f, 0.7547169f, 0.1245995f);
             main.numCorrect++;
-            correctIncorrect[0].SetColor("_EmissionColor", green);
+            correctIncorrect[0].material.SetColor("_EmissionColor", green);
         } else {
             Color red = new Color(0.8490566f, 0.1161445f, 0.1161445f);
-            correctIncorrect[1].SetColor("_EmissionColor", red);
+            correctIncorrect[1].material.SetColor("_EmissionColor", red);
         }
         Invoke("resetColors", 3);
     }
     private void resetColors() {
+        if (!isMain) { selfDestruct(); return; }
         Color green = new Color(0.02175654f, 0.1226415f, 0.01214845f);
         Color red = new Color(0.09433959f, 0.01112495f, 0.01112495f);
-        correctIncorrect[0].SetColor("_EmissionColor", green);
-        correctIncorrect[1].SetColor("_EmissionColor", red);
+        correctIncorrect[0].material.SetColor("_EmissionColor", green);
+        correctIncorrect[1].material.SetColor("_EmissionColor", red);
+
+        foreach (OptionPanelController op in currentPanels) {
+            Debug.Log(op.name);
+            if (op != null) {
+                op.resetExample();
+                Destroy(op.gameObject);
+            }
+        }
+        currentPanels.Clear();
     }
 
     // Model Setting
@@ -113,15 +124,6 @@ public class ContentManager : MonoBehaviour
         } else {
             CorrectAnswer(false);
         }
-
-        foreach (OptionPanelController op in currentPanels) {
-            Debug.Log(op.name);
-            if (op != null) {
-                op.resetExample();
-                Destroy(op.gameObject);
-            }
-        }
-        currentPanels.Clear();
     }
 
     // MCSM ( Multiple Choice Single Model )
@@ -154,17 +156,8 @@ public class ContentManager : MonoBehaviour
         } else {
             CorrectAnswer(false);
         }
-
-        foreach (OptionPanelController op in currentPanels) {
-            Debug.Log(op.name);
-            if (op != null) {
-                op.resetExample();
-                Destroy(op.gameObject);
-            }
-        }
         Destroy(exampleObject);
         resetButton.SetActive(false);
-        currentPanels.Clear();
     }
 
     // MCAM ( Multiple Choice All Model )
@@ -197,17 +190,8 @@ public class ContentManager : MonoBehaviour
         } else {
             CorrectAnswer(false);
         }
-
-        foreach (OptionPanelController op in currentPanels) {
-            Debug.Log(op.name);
-            if (op != null) {
-                op.resetExample();
-                Destroy(op.gameObject);
-            }
-        }
         Destroy(exampleObject);
         resetButton.SetActive(false);
-        currentPanels.Clear();
     }
 
     // PM ( Plane Move )
@@ -227,17 +211,8 @@ public class ContentManager : MonoBehaviour
         } else {
             CorrectAnswer(false);
         }
-
-        foreach (OptionPanelController op in currentPanels) {
-            Debug.Log(op.name);
-            if (op != null) {
-                op.resetExample();
-                Destroy(op.gameObject);
-            }
-        }
         Destroy(exampleObject);
         resetButton.SetActive(false);
-        currentPanels.Clear();
     }
 
     // PD ( Plane Draw )
@@ -270,21 +245,14 @@ public class ContentManager : MonoBehaviour
         } else {
             CorrectAnswer(false);
         }
-
-        foreach (OptionPanelController op in currentPanels) {
-            if (op != null) {
-                op.resetExample();
-                Destroy(op.gameObject);
-            }
-        }
         Destroy(exampleObject);
         resetButton.SetActive(false);
-        currentPanels.Clear();
     }
 
     // Setting Level
     // Selecting Answer
     public void setLevel() {
+        Debug.Log(currentLevel +" "+ levelset.Levels.Length);
         if (currentLevel == levelset.Levels.Length) {
             endLevel();
             return;
@@ -303,7 +271,7 @@ public class ContentManager : MonoBehaviour
             cm.main = this;
             Question tq = level.Questions[i];
             cm.currentType = tq.type;
-
+            main.an = 0;
             switch (tq.type) {
                 case "MCMM":
                     cm.setMCMM(tq);
@@ -324,7 +292,8 @@ public class ContentManager : MonoBehaviour
         }   
     }
     public void answerSelect(int ind) {
-
+        if (checkedf) return;
+        checkedf = true;
         switch(currentType) {
             case "MCMM":
                 checkMCMM(ind);
@@ -342,8 +311,8 @@ public class ContentManager : MonoBehaviour
                 checkPD();
                 break;
         }
-        Debug.Log(main.an);
-        Debug.Log(main.levelset.Levels[currentLevel].Questions.Length);
+        Debug.Log("cl " +currentLevel);
+        Debug.Log("as " + main.an + " " + main.levelset.Levels[currentLevel].Questions.Length);
         if (main.an == main.levelset.Levels[currentLevel].Questions.Length) {
             main.currentLevel++;
             main.Invoke("setLevel", 3);
@@ -353,13 +322,13 @@ public class ContentManager : MonoBehaviour
         gradepanel.SetActive(true);
         title.text = "No more levels";
         gradepanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Grade: " + numCorrect+" / "+numTotal;
-        numCorrect = 0; numTotal = 0; currentLevel = 0; an = 0;
-    }
-    public void LevelSelect() {
-        foreach(ContentManager cm in nonmain) {
+        numCorrect = 0; numTotal = 0; currentLevel = 0; an = 0; checkedf = false;
+        foreach (ContentManager cm in nonmain) {
             cm.selfDestruct();
         }
         nonmain.Clear();
+    }
+    public void LevelSelect() {
         gradepanel.SetActive(false);
         FSitems = Resources.LoadAll<TextAsset>("Levels");
         int ind = 0;

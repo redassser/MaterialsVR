@@ -1,46 +1,74 @@
 {
     "Levels": [
         {
-            "type": "PD",
-            "title": "Create a [-1, 1, 1] plane",
-            "Model": "D",
-            "correctPlane": [-1,1,1]
+            "Questions": [
+                {
+                    "type": "PD",
+                    "title": "Create a [-1, 1, 1] plane",
+                    "Model": "D",
+                    "correctPlane": [-1,1,1]
+                }
+            ]
         },
         {
-            "type": "PD",
-            "title": "Create a [1, -1, 1] plane",
-            "Model": "D",
-            "correctPlane": [1,-1,1]
+            "Questions": [
+                {
+                    "type": "PD",
+                    "title": "Create a [1, -1, 1] plane",
+                    "Model": "D",
+                    "correctPlane": [1,-1,1]
+                }
+            ]
         },
         {
-            "type": "PD",
-            "title": "Create a [-1, 0, 1] plane",
-            "Model": "D",
-            "correctPlane": [-1,0,1]
+            "Questions": [
+                {
+                    "type": "PD",
+                    "title": "Create a [-1, 0, 1] plane",
+                    "Model": "D",
+                    "correctPlane": [-1,0,1]
+                }
+            ]
         },
         {
-            "type": "PD",
-            "title": "Create a [2, -1, 1] plane",
-            "Model": "D",
-            "correctPlane": [2,-1,1]
+            "Questions": [
+                {
+                    "type": "PD",
+                    "title": "Create a [2, -1, 1] plane",
+                    "Model": "D",
+                    "correctPlane": [2,-1,1]
+                }
+            ]
         },
         {
-            "type": "PD",
-            "title": "Create a [1, 0, 2] plane",
-            "Model": "D",
-            "correctPlane": [1,0,2]
+            "Questions": [
+                {
+                    "type": "PD",
+                    "title": "Create a [1, 0, 2] plane",
+                    "Model": "D",
+                    "correctPlane": [1,0,2]
+                }
+            ]
         },
         {
-            "type": "PD",
-            "title": "Create a [-1, 0, 2] plane",
-            "Model": "D",
-            "correctPlane": [-1,0,2]
+            "Questions": [
+                {
+                    "type": "PD",
+                    "title": "Create a [-1, 0, 2] plane",
+                    "Model": "D",
+                    "correctPlane": [-1,0,2]
+                }
+            ]
         },
         {
-            "type": "PD",
-            "title": "Create a [0, 1, 2] plane",
-            "Model": "D",
-            "correctPlane": [0,1,2]
+            "Questions": [
+                {
+                    "type": "PD",
+                    "title": "Create a [0, 1, 2] plane",
+                    "Model": "D",
+                    "correctPlane": [0,1,2]
+                }
+            ]
         }
     ]
 }

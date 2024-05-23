@@ -367,8 +367,8 @@ MonoBehaviour:
   - {fileID: 7284069585720521393, guid: 86be581cafb13254dabe0b9e4a96b862, type: 3}
   - {fileID: 7284069585720521393, guid: 0e773cc9feb1b8e49a98670cedc21fd0, type: 3}
   correctIncorrect:
-  - {fileID: 2100000, guid: 8e56d5e79011f3046b266d3afa50cbfb, type: 2}
-  - {fileID: 2100000, guid: ecee3d95c222a894f9ff230f99c12564, type: 2}
+  - {fileID: 7923287635346113741}
+  - {fileID: 6721289516554057604}
   resetButton: {fileID: 8798822646261013554}
   exampleObject: {fileID: 0}
   holder: {fileID: 2383310421681738803}
@@ -380,6 +380,11 @@ MonoBehaviour:
   panelPrefab: {fileID: 8811455409412706816, guid: 60718aaecb234584ca74cde8e7619724, type: 3}
   gradepanel: {fileID: 3519629277227621353}
   panelLevel: {fileID: 8327745797937373537, guid: 39971f29f6b4a7b43a418b330901675a, type: 3}
+  isMain: 0
+  holderinstant: {fileID: 0}
+  main: {fileID: 0}
+  nonmain: []
+  an: 0
 --- !u!1 &4117522440587439443
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,7 +396,6 @@ GameObject:
   - component: {fileID: 4621132499911329326}
   - component: {fileID: 5152909560097743143}
   - component: {fileID: 6721289516554057604}
-  - component: {fileID: 283242350041894953}
   m_Layer: 0
   m_Name: RedCube
   m_TagString: Untagged
@@ -464,27 +468,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &283242350041894953
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4117522440587439443}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4180702967361890597
 GameObject:
   m_ObjectHideFlags: 0
@@ -571,7 +554,6 @@ GameObject:
   - component: {fileID: 8404799471041480563}
   - component: {fileID: 4184041781361910542}
   - component: {fileID: 7923287635346113741}
-  - component: {fileID: 4701000183450400184}
   m_Layer: 0
   m_Name: GreenCube
   m_TagString: Untagged
@@ -644,27 +626,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4701000183450400184
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4664809055960111707}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4987477634339535571
 GameObject:
   m_ObjectHideFlags: 0
@@ -1697,6 +1658,10 @@ PrefabInstance:
     - target: {fileID: 1650772493962242090, guid: 39971f29f6b4a7b43a418b330901675a, type: 3}
       propertyPath: m_text
       value: 'Grade: 0%'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356143997843944689, guid: 39971f29f6b4a7b43a418b330901675a, type: 3}
+      propertyPath: m_Size.x
+      value: 700
       objectReference: {fileID: 0}
     - target: {fileID: 4857089232568556356, guid: 39971f29f6b4a7b43a418b330901675a, type: 3}
       propertyPath: m_text
