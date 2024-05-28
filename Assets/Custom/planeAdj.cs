@@ -7,6 +7,7 @@ public class planeAdj : MonoBehaviour
     public int[] planeType = new int[3];
     public float[] h = new float[3];
     public float min = 0;
+    public bool locked;
     // Start is called before the first frame update
     public void rePlane(Vector3[] points)
     {

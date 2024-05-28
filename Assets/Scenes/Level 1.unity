@@ -373,6 +373,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 518248255281029001, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 518248255281029001, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 518248255281029001, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 518248255281029001, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1942434506682929227, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
       propertyPath: isMain
       value: 1
@@ -381,6 +397,14 @@ PrefabInstance:
       propertyPath: holderinstant
       value: 
       objectReference: {fileID: 7296070311032087793, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+    - target: {fileID: 1942434506682929227, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+      propertyPath: correctIncorrect.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1942434506682929227, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+      propertyPath: correctIncorrect.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2383310421681738803, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.819
@@ -421,6 +445,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3427137870929055041, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6652384870675676492, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -437,8 +465,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level Holder
       objectReference: {fileID: 0}
+    - target: {fileID: 9037441483439575349, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4117522440587439443, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
+    - {fileID: 4664809055960111707, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b6d9f7d14b37304999ef9c2142cc52d, type: 3}

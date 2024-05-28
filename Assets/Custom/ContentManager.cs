@@ -6,7 +6,7 @@ public class ContentManager : MonoBehaviour
 {
     public TMPro.TextMeshProUGUI title;
     public GameObject[] prefabs; //0 cube, 1 SC, 2 BCC, 3 FCC
-    public Renderer[] correctIncorrect;
+    public UnityEngine.UI.Image bg;
     public GameObject resetButton;
     public GameObject exampleObject;
     public Transform holder;
@@ -42,21 +42,18 @@ public class ContentManager : MonoBehaviour
         main.numTotal++;
         main.an++;
         if(isCorrect) {
-            Color green = new Color(0.1921119f, 0.7547169f, 0.1245995f);
+            Color green = new Color(0.1921119f, 0.7547169f, 0.1245995f, 0.39f);
             main.numCorrect++;
-            correctIncorrect[0].material.SetColor("_EmissionColor", green);
+            bg.color = green;
         } else {
-            Color red = new Color(0.8490566f, 0.1161445f, 0.1161445f);
-            correctIncorrect[1].material.SetColor("_EmissionColor", red);
+            Color red = new Color(0.8490566f, 0.1161445f, 0.1161445f, 0.39f);
+            bg.color = red;
         }
         Invoke("resetColors", 3);
     }
     private void resetColors() {
-        if (!isMain) { selfDestruct(); return; }
-        Color green = new Color(0.02175654f, 0.1226415f, 0.01214845f);
-        Color red = new Color(0.09433959f, 0.01112495f, 0.01112495f);
-        correctIncorrect[0].material.SetColor("_EmissionColor", green);
-        correctIncorrect[1].material.SetColor("_EmissionColor", red);
+        Color normal = new Color(1f, 1f, 1f, 0.39f);
+        bg.color = normal;
 
         foreach (OptionPanelController op in currentPanels) {
             Debug.Log(op.name);
@@ -156,7 +153,6 @@ public class ContentManager : MonoBehaviour
         } else {
             CorrectAnswer(false);
         }
-        Destroy(exampleObject);
         resetButton.SetActive(false);
     }
 
@@ -190,7 +186,6 @@ public class ContentManager : MonoBehaviour
         } else {
             CorrectAnswer(false);
         }
-        Destroy(exampleObject);
         resetButton.SetActive(false);
     }
 
@@ -211,7 +206,6 @@ public class ContentManager : MonoBehaviour
         } else {
             CorrectAnswer(false);
         }
-        Destroy(exampleObject);
         resetButton.SetActive(false);
     }
 
@@ -245,7 +239,6 @@ public class ContentManager : MonoBehaviour
         } else {
             CorrectAnswer(false);
         }
-        Destroy(exampleObject);
         resetButton.SetActive(false);
     }
 
@@ -289,7 +282,8 @@ public class ContentManager : MonoBehaviour
                     cm.setPD(tq);
                     break;
             }
-        }   
+        }
+        checkedf = false;
     }
     public void answerSelect(int ind) {
         if (checkedf) return;
@@ -311,8 +305,9 @@ public class ContentManager : MonoBehaviour
                 checkPD();
                 break;
         }
-        Debug.Log("cl " +currentLevel);
-        Debug.Log("as " + main.an + " " + main.levelset.Levels[currentLevel].Questions.Length);
+        if(exampleObject) {
+            Destroy(exampleObject);
+        }
         if (main.an == main.levelset.Levels[currentLevel].Questions.Length) {
             main.currentLevel++;
             main.Invoke("setLevel", 3);
@@ -322,7 +317,7 @@ public class ContentManager : MonoBehaviour
         gradepanel.SetActive(true);
         title.text = "No more levels";
         gradepanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Grade: " + numCorrect+" / "+numTotal;
-        numCorrect = 0; numTotal = 0; currentLevel = 0; an = 0; checkedf = false;
+        numCorrect = 0; numTotal = 0; currentLevel = 0; an = 0;
         foreach (ContentManager cm in nonmain) {
             cm.selfDestruct();
         }

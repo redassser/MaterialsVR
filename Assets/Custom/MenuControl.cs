@@ -33,6 +33,7 @@ public class MenuControl : MonoBehaviour
     void Update()
     {
         if (drawnlines.Count != 0 && OVRInput.GetDown(OVRInput.RawButton.B)) {
+            if (drawline.transform.GetComponentInParent<planeAdj>().locked) return;
             drawnlines[drawnlines.Count - 1].GetComponentInParent<MeshFilter>().mesh = null;
             drawnlines[drawnlines.Count - 1].loop = false;
             drawnlines.RemoveAt(drawnlines.Count - 1);
