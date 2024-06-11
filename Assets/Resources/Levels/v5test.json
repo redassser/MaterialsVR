@@ -1,0 +1,73 @@
+{
+    "oneTry": true,
+    "Levels": [
+        {
+            "Questions": [
+                {
+                    "type": "MCSM",
+                    "title": "How many atoms in a face centered cubic?",
+                    "Model": "FCC",
+                    "options": [
+                        { 
+                            "Button": "A",
+                            "Text": "2",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "B",
+                            "Text": "4",
+                            "Model": "None"
+                        }
+                    ],
+                    "correctIndex": 1
+                },
+                {
+                    "type": "PD",
+                    "title": "Create a [1, 1, 1] plane",
+                    "Model": "D",
+                    "correctPlane": [1,1,1]
+                }
+            ]
+        },
+        {
+            "Questions": [
+                {
+                    "type": "MCMM",
+                    "title": "Which one is the Face Centered Cubic?",
+                    "Model": "None",
+                    "options": [
+                        { 
+                            "Button": "A",
+                            "Text": "",
+                            "Model": "FCC"
+                        },
+                        { 
+                            "Button": "B",
+                            "Text": "",
+                            "Model": "BCC"
+                        }
+                    ],
+                    "correctIndex": 0
+                },
+                {
+                    "type": "MC",
+                    "title": "1 + 1 = ?",
+                    "Model": "None",
+                    "options": [
+                        { 
+                            "Button": "A",
+                            "Text": "2",
+                            "Model": "None"
+                        },
+                        { 
+                            "Button": "B",
+                            "Text": "4",
+                            "Model": "None"
+                        }
+                    ],
+                    "correctIndex": 0
+                }
+            ]
+        }
+    ]
+}

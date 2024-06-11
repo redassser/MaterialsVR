@@ -18,13 +18,14 @@ public class MainMenuContentManager : MonoBehaviour
     public GameObject levelPanel;
     private List<GameObject> panels = new List<GameObject>();
     public LevelSet levelset;
+    private bool oneTry;
     private bool levelsLoaded = false;
 
     // Question set
     public GameObject questionPanel;
     public GameObject partPanel;
     private List<GameObject[]> qpanels = new List<GameObject[]>();
-    private List<int[]> qcorrect = new List<int[]>(); // 0 is unanswered, 1 is correct, 2 is incorrect
+    private List<int[]> qcorrect = new List<int[]>(); // -1 is unaswered, -2 is correct, anything else is option answered incorrect
 
     // Question
     public GameObject questionHolder;
@@ -89,9 +90,9 @@ public class MainMenuContentManager : MonoBehaviour
         int c = 0, i= 0, u = 0;
         foreach (int[] k in qcorrect) {
             foreach (int n in k) {
-                if (n == 1) c += 1;
-                else if (n == 2) i += 1;
-                else u += 1;
+                if (n == -2) c += 1;
+                else if (n == -1) u += 1;
+                else i += 1;
             }
         }
         PopupContent.transform.GetChild(3).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Correct: "+c+"\nIncorrect: "+i+"\nUnanswered: "+u;
@@ -146,8 +147,13 @@ public class MainMenuContentManager : MonoBehaviour
                 panes[j+1] = temp1panel;
             }
             qpanels.Add(panes);
-            qcorrect.Add(new int[level.Questions.Length]);
+            int[] init = new int[level.Questions.Length];
+            for(int l=0;l<level.Questions.Length;l++) {
+                init[l] = -1;
+            }
+            qcorrect.Add(init);
         }
+        oneTry = levelset.oneTry;
         return;
     }
     private void unloadQuestion() {
@@ -174,9 +180,12 @@ public class MainMenuContentManager : MonoBehaviour
             temppanel.transform.localPosition = new Vector3(1.2f,-0.55f+0.55f*i,0f);
             temppanel.transform.GetChild(0).GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = level.Questions[i].title;
 
-            GameObject exampleObject = SpawnModel(level.Questions[i].Model);
-            StartCoroutine(resetExample(exampleObject, temppanel.transform));
-            qExamples.Add(exampleObject);
+            GameObject exampleObject = null;
+            if(level.Questions[i].Model != "None") {
+                exampleObject = SpawnModel(level.Questions[i].Model);
+                StartCoroutine(resetExample(exampleObject, temppanel.transform));
+                qExamples.Add(exampleObject);
+            }
 
             int ind = 0;
 
@@ -191,10 +200,22 @@ public class MainMenuContentManager : MonoBehaviour
             if (level.Questions[i].options != null) {
                 foreach (Option op in level.Questions[i].options) {
                     GameObject tempop = Instantiate(questionOptionPanel, temppanel.transform.GetChild(0).GetChild(0).GetChild(1), false);
+                    if(qcorrect[qi][i] == -2 && ind == level.Questions[i].correctIndex) {
+                        tempop.GetComponent<UnityEngine.UI.Image>().color = new Color(0, 1, 0);
+                    } else if (qcorrect[qi][i] != -1 && qcorrect[qi][i] == ind) {
+                        tempop.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 0, 0);
+                    }
                     tempop.GetComponent<RectTransform>().anchoredPosition = new Vector2(10 + 250 * (ind % 4), -5 - 95 * (ind / 4));
                     tempop.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = level.Questions[i].options[ind].Text;
                     int pi = i; int opi = ind;
                     tempop.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(delegate { submitAnswer(qi, pi, opi); });
+
+                    if (op.Model != "None" && op.Model != null) {
+                        GameObject optionObject = SpawnModel(op.Model);
+                        StartCoroutine(resetExample(optionObject, tempop.transform, 1));
+                        qExamples.Add(optionObject);
+                    }
+
                     ind++;
                 }
             }
@@ -204,35 +225,52 @@ public class MainMenuContentManager : MonoBehaviour
     }
 
     public void submitAnswer(int qi, int pi, int opi, planeAdj h = null) { // Question index, part index, option index. for example Question 1, part B, option 3
+        if (oneTry && qcorrect[qi][pi] != -1) return;
         int correcti = levelset.Levels[qi].Questions[pi].correctIndex;
         if (h != null) {
             int[] ints = h.planeType;
             int[] currentCorrectPlane = levelset.Levels[qi].Questions[pi].correctPlane;
+            UnityEngine.UI.Image button = qHolders[pi].transform.GetChild(0).GetChild(0).GetChild(1).GetChild(opi).GetComponent<UnityEngine.UI.Image>();
             if ((currentCorrectPlane[0] == ints[0] && currentCorrectPlane[1] == ints[1] && currentCorrectPlane[2] == ints[2]) ||
             (currentCorrectPlane[0] == -ints[0] && currentCorrectPlane[1] == -ints[1] && currentCorrectPlane[2] == -ints[2])) { // check negative as well
                 qpanels[qi][pi + 1].GetComponent<UnityEngine.UI.Image>().color = new Color(0, 1, 0);
-                qcorrect[qi][pi] = 1;
+                button.color = new Color(0, 1, 0);
+                qcorrect[qi][pi] = -2;
             } else {
                 qpanels[qi][pi + 1].GetComponent<UnityEngine.UI.Image>().color = new Color(1, 0, 0);
-                qcorrect[qi][pi] = 2;
+                button.color = new Color(1, 0, 0);
+                qcorrect[qi][pi] = opi;
             }
         } else {
+            foreach(Transform f in qHolders[pi].transform.GetChild(0).GetChild(0).GetChild(1)) {
+                f.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 1);
+            }
+            UnityEngine.UI.Image button = qHolders[pi].transform.GetChild(0).GetChild(0).GetChild(1).GetChild(opi).GetComponent<UnityEngine.UI.Image>();
             if (opi == correcti) {
                 qpanels[qi][pi + 1].GetComponent<UnityEngine.UI.Image>().color = new Color(0, 1, 0);
-                qcorrect[qi][pi] = 1;
+                button.color = new Color(0, 1, 0);
+                qcorrect[qi][pi] = -2;
             } else {
                 qpanels[qi][pi + 1].GetComponent<UnityEngine.UI.Image>().color = new Color(1, 0, 0);
-                qcorrect[qi][pi] = 2;
+                button.color = new Color(1, 0, 0);
+                qcorrect[qi][pi] = opi;
             }
         }
     }
 
-    IEnumerator resetExample(GameObject exampleObject, Transform holder) {
+    IEnumerator resetExample(GameObject exampleObject, Transform holder, int op = 0) {
         yield return new WaitForSeconds(0.025f);
         exampleObject.transform.parent = holder;
-        exampleObject.transform.localPosition = new Vector3(-0.5f, 0, 0);
-        exampleObject.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
-        exampleObject.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+        if (op == 0) {
+            exampleObject.transform.localPosition = new Vector3(-0.5f, 0, 0);
+            exampleObject.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
+            exampleObject.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+        } else {
+            exampleObject.transform.localPosition = new Vector3(120f, -45f, 0);
+            exampleObject.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
+            exampleObject.transform.localScale = new Vector3(72f, 72f, 72f);
+        }
+        
         yield return null;
     }
     private GameObject SpawnModel(string model) {
@@ -289,6 +327,7 @@ public class MainMenuContentManager : MonoBehaviour
         public static LevelSet createFromJson(string jsonString) {
             return JsonUtility.FromJson<LevelSet>(jsonString);
         }
+        public bool oneTry;
         public Level[] Levels;
     }
 

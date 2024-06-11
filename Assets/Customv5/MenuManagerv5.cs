@@ -30,13 +30,16 @@ public class MenuManagerv5 : MonoBehaviour
             drawnlines[drawnlines.Count - 1].loop = false;
             drawnlines.RemoveAt(drawnlines.Count - 1);
         }
-
+      //Cube Draw
         if (Physics.Raycast(rightCont.transform.position, rightCont.transform.forward, out hit, 0.2f, layermaskDraw)) {
             line.SetPositions(new Vector3[] { rightCont.transform.position, rightCont.transform.position + rightCont.transform.forward * 0.2f });
             line.startColor = Color.yellow;
             line.endColor = Color.yellow;
+            drawline = hit.collider.GetComponentInParent<LineRenderer>();
+
+            hit.collider.transform.parent.GetComponentInParent<planeAdj>();
+
             if (OVRInput.Get(OVRInput.RawButton.RIndexTrigger)) {
-                drawline = hit.collider.GetComponentInParent<LineRenderer>();
                 if (drawnlines.Contains(drawline)) {
                     line.startColor = Color.red;
                     line.endColor = Color.red;
