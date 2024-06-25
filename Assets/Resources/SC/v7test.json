@@ -1,0 +1,39 @@
+{
+    "oneTry": true,
+    "Questions": [
+        {
+            "type": "MCSM",
+            "title": "This is a test, answer 6",
+            "Model": "FCC",
+            "options": [
+                { 
+                    "Button": "A",
+                    "Text": "2",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "B",
+                    "Text": "4",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "C",
+                    "Text": "6",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "7",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 2
+        },
+        {
+            "type": "PD",
+            "title": "Create a [0, 1, 1] plane",
+            "Model": "D",
+            "correctPlane": [0,1,1]
+        }
+    ]
+}

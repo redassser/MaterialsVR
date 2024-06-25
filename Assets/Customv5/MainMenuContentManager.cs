@@ -24,7 +24,7 @@ public class MainMenuContentManager : MonoBehaviour
     // Question set
     public GameObject questionPanel;
     public GameObject partPanel;
-    private List<GameObject[]> qpanels = new List<GameObject[]>();
+    private List<GameObject> qpanels = new List<GameObject>();
     private List<int[]> qcorrect = new List<int[]>(); // -1 is unaswered, -2 is correct, anything else is option answered incorrect
 
     // Question
@@ -65,9 +65,9 @@ public class MainMenuContentManager : MonoBehaviour
         }
         return;
     }
-    public void returnToLevelSelectFromPopup() {
+    public void returnToCategorySelectFromPopup() {
         ClosePopup();
-        returnToLevelSelect();
+        returnToCategorySelect();
         return;
     }
     public void submitLevelFromPopup() {
@@ -97,41 +97,145 @@ public class MainMenuContentManager : MonoBehaviour
         }
         PopupContent.transform.GetChild(3).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Correct: "+c+"\nIncorrect: "+i+"\nUnanswered: "+u;
     }
-    public void returnToLevelSelect() {
+    
+    public void toLevelSelect(string category) {
         closeMenus();
         clearLevel();
         MainMenuContent.transform.GetChild(0).gameObject.SetActive(true);
-        TopBarContent.transform.GetChild(0).gameObject.SetActive(false);
+        TopBarContent.transform.GetChild(0).gameObject.SetActive(true);
         TopBarContent.transform.GetChild(1).gameObject.SetActive(false);
         if (levelsLoaded) return;
-        TextAsset[] FSitems = Resources.LoadAll<TextAsset>("Levels");
+        TextAsset[] FSitems = Resources.LoadAll<TextAsset>(category);
+        int ind = 0;
         foreach (TextAsset i in FSitems) {
             GameObject temppanel = Instantiate(levelPanel, MainMenuContent.transform.GetChild(0), false);
-            temppanel.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(delegate { loadLevel(i); });
+            int h = ind;
+            temppanel.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { loadLevel(i, h); });
             temppanel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = i.name;
             panels.Add(temppanel);
+            
+            int[] nums = new int[LevelSet.createFromJson(i.ToString()).Questions.Length];
+            for (int f=0;f<nums.Length;f++) { nums[f] = -1; }
+            qcorrect.Add(nums);
+            ind++;
         }
         levelsLoaded = true;
         return;
     }
+    public void returnToCategorySelect() {
+        closeMenus();
+        clearLevel();
+        MainMenuContent.transform.GetChild(2).gameObject.SetActive(true);
+        TopBarContent.transform.GetChild(0).gameObject.SetActive(false);
+        TopBarContent.transform.GetChild(1).gameObject.SetActive(false);
+        qcorrect.Clear();
+        return;
+    }
     private void clearLevel() {
+        unloadLevel();
         for(int i=0;i< MainMenuContent.transform.GetChild(1).childCount; i++) {
             if (i == 0) continue;
             Destroy(MainMenuContent.transform.GetChild(1).GetChild(i).gameObject);
         }
-        unloadQuestion();
         currentQI = -1;
         qpanels.Clear();
-        qcorrect.Clear();
+    }
+    private void unloadLevel() {
+        foreach (GameObject qHolder in qHolders) {
+            Destroy(qHolder);
+        }
+        foreach (GameObject qExample in qExamples) {
+            if (qExample) Destroy(qExample);
+        }
+        qHolders.Clear();
+        qExamples.Clear();
+    }
+    private void loadLevel(TextAsset text, int j) {
+        levelset = LevelSet.createFromJson(text.ToString());
+        if (currentQI == j) return;
+        currentQI = j;
+        unloadLevel();
+        for (int i = 0; i < levelset.Questions.Length; i++) {
+            GameObject temppanel = Instantiate(questionHolder, transform, false);
+            temppanel.transform.localPosition = new Vector3(0.85f + 0.65f*i, 0f, 0f);
+
+            GameObject exampleObject = null;
+            if (levelset.Questions[i].Model != "None") {
+                exampleObject = SpawnModel(levelset.Questions[i].Model);
+                StartCoroutine(resetExample(exampleObject, temppanel.transform));
+                qExamples.Add(exampleObject);
+            }
+
+            int ind = 0;
+
+            if (levelset.Questions[i].type == "PD") {
+                temppanel.transform.GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = levelset.Questions[i].title;
+                GameObject tempop = Instantiate(questionOptionPanel, temppanel.transform.GetChild(0).GetChild(0).GetChild(0), false);
+                int pi = i; int opi = ind;
+                tempop.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(delegate { submitAnswer(j, pi, opi, exampleObject.GetComponent<planeAdj>()); });
+            }
+
+            if (levelset.Questions[i].options != null) {
+                foreach (Option op in levelset.Questions[i].options) {
+                    GameObject tempop = Instantiate(questionOptionPanel, temppanel.transform.GetChild(0).GetChild(0).GetChild(0), false);
+
+                    if (qcorrect[j][i] == -2 && ind == levelset.Questions[i].correctIndex) {
+                        tempop.GetComponent<UnityEngine.UI.Image>().color = new Color(0, 1, 0);
+                    } else if (qcorrect[j][i] != -1 && qcorrect[j][i] == ind) {
+                        tempop.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 0, 0);
+                    }
+                    tempop.GetComponent<RectTransform>().anchoredPosition = new Vector2(-150 + 250 * (ind % 2), -10 - 95 * (ind / 2));
+                    tempop.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = levelset.Questions[i].options[ind].Text;
+                    int pi = i; int opi = ind;
+                    tempop.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(delegate { submitAnswer(j, pi, opi); });
+
+                    if (op.Model != "None" && op.Model != null) {
+                        GameObject optionObject = SpawnModel(op.Model);
+                        StartCoroutine(resetExample(optionObject, tempop.transform, 1));
+                        qExamples.Add(optionObject);
+                    }
+
+                    ind++;
+                }
+            }
+            qHolders.Add(temppanel);
+        }
+        return;
     }
 
+    public void submitAnswer(int qi, int pi, int opi, planeAdj h = null) { // Question index, part index, option index. for example Question 1, part B, option 3
+        if (oneTry && qcorrect[qi][pi] != -1) return;
+        int correcti = levelset.Questions[pi].correctIndex;
+        if (h != null) {
+            int[] ints = h.planeType;
+            int[] currentCorrectPlane = levelset.Questions[pi].correctPlane;
+            UnityEngine.UI.Image button = qHolders[pi].transform.GetChild(0).GetChild(0).GetChild(0).GetChild(opi).GetComponent<UnityEngine.UI.Image>();
+            if ((currentCorrectPlane[0] == ints[0] && currentCorrectPlane[1] == ints[1] && currentCorrectPlane[2] == ints[2]) ||
+            (currentCorrectPlane[0] == -ints[0] && currentCorrectPlane[1] == -ints[1] && currentCorrectPlane[2] == -ints[2])) { // check negative as well
+                button.color = new Color(0, 1, 0);
+                qcorrect[qi][pi] = -2;
+            } else {
+                button.color = new Color(1, 0, 0);
+                qcorrect[qi][pi] = opi;
+            }
+        } else {
+            foreach (Transform f in qHolders[pi].transform.GetChild(0).GetChild(0).GetChild(0)) {
+                f.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 1);
+            }
+            UnityEngine.UI.Image button = qHolders[pi].transform.GetChild(0).GetChild(0).GetChild(0).GetChild(opi).GetComponent<UnityEngine.UI.Image>();
+            if (opi == correcti) {
+                button.color = new Color(0, 1, 0);
+                qcorrect[qi][pi] = -2;
+            } else {
+                button.color = new Color(1, 0, 0);
+                qcorrect[qi][pi] = opi;
+            }
+        }
+    }
+    /*
     private void loadLevel(TextAsset text) {
-        closeMenus();
-        clearLevel();
-        MainMenuContent.transform.GetChild(1).gameObject.SetActive(true);
-        TopBarContent.transform.GetChild(0).gameObject.SetActive(true);
-        TopBarContent.transform.GetChild(1).gameObject.SetActive(true);
-        levelset = LevelSet.createFromJson(text.ToString());
+
+        
         for(int i=0;i<levelset.Levels.Length;i++) {
             Level level = levelset.Levels[i];
             GameObject temppanel = Instantiate(questionPanel, MainMenuContent.transform.GetChild(1), false);
@@ -166,8 +270,9 @@ public class MainMenuContentManager : MonoBehaviour
         qHolders.Clear();
         qExamples.Clear();
     }
-    private void loadQuestion(int qi) {
-        if (qi == currentQI) return;
+    private void loadQuestions(TextAsset text) {
+        levelset = LevelSet.createFromJson(text.ToString());
+        if () return;
         currentQI = qi;
         unloadQuestion();
         for(int i=0;i<qpanels.Count;i++) {
@@ -256,15 +361,15 @@ public class MainMenuContentManager : MonoBehaviour
                 qcorrect[qi][pi] = opi;
             }
         }
-    }
+    }*/
 
     IEnumerator resetExample(GameObject exampleObject, Transform holder, int op = 0) {
         yield return new WaitForSeconds(0.025f);
         exampleObject.transform.parent = holder;
         if (op == 0) {
-            exampleObject.transform.localPosition = new Vector3(-0.5f, 0, 0);
-            exampleObject.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
-            exampleObject.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+            exampleObject.transform.localPosition = new Vector3(0f, 0.135f, 0f);
+            exampleObject.transform.localRotation = Quaternion.Euler(new Vector3(0f, 135f, 0f));
+            exampleObject.transform.localScale = new Vector3(0.16f, 0.16f, 0.16f);
         } else {
             exampleObject.transform.localPosition = new Vector3(120f, -45f, 0);
             exampleObject.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
@@ -296,7 +401,7 @@ public class MainMenuContentManager : MonoBehaviour
     }
 
     void Start() {
-        returnToLevelSelect();
+        returnToCategorySelect();
     }
 
     [System.Serializable]
@@ -317,18 +422,13 @@ public class MainMenuContentManager : MonoBehaviour
         public int[] correctPlane;
     }
     [System.Serializable]
-    public class Level
-    {
-        public Question[] Questions;
-    }
-    [System.Serializable]
     public class LevelSet
     {
         public static LevelSet createFromJson(string jsonString) {
             return JsonUtility.FromJson<LevelSet>(jsonString);
         }
         public bool oneTry;
-        public Level[] Levels;
+        public Question[] Questions;
     }
 
 }
