@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Oculus.Interaction;
 using Oculus.Interaction.Grab;
+using UnityEngine;
 
 public class CustomGrabInteractor : GrabInteractor
 {
+    /// <summary>
+    /// This is a custom override to fix a bug with deleted Objects causing errors
+    /// </summary>
     protected override GrabInteractable ComputeCandidate() {
         Vector3 position = Rigidbody.transform.position;
         GrabInteractable closestInteractable = null;

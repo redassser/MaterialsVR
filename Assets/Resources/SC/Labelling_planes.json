@@ -1,0 +1,105 @@
+{
+    "oneTry": true,
+    "label": "Label the following planes",
+    "Questions": [
+        {
+            "type": "P",
+            "Model": "D",
+            "correctPlane": [1,0,0],
+            "options": [
+                { 
+                    "Button": "A",
+                    "Text": "( 1 0 0 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "B",
+                    "Text": "( 0 0 1 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "C",
+                    "Text": "( 0 1 0 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "( 1 1 0 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "( 0 1 1 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "( 1 1 1 )",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 0
+        },
+        {
+            "type": "P",
+            "Model": "D",
+            "correctPlane": [2,1,1],
+            "options": [
+                { 
+                    "Button": "A",
+                    "Text": "( 2 1 1 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "B",
+                    "Text": "( 1/2 1 1 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "C",
+                    "Text": "( 1 1/2 1 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "( 2 0 0 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "( 1/2 0 0 )",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 0
+        },
+        {
+            "type": "P",
+            "Model": "D",
+            "correctPlane": [0,0,3],
+            "options": [
+                { 
+                    "Button": "A",
+                    "Text": "( 0 0 1/3 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "B",
+                    "Text": "( 1 1 3 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "C",
+                    "Text": "( 0 3 0 )",
+                    "Model": "None"
+                },
+                { 
+                    "Button": "D",
+                    "Text": "( 3 0 0 )",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 0
+        }
+    ]
+}

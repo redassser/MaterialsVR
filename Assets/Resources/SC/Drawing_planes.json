@@ -1,0 +1,25 @@
+{
+    "oneTry": true,
+    "label": "Draw the following planes",
+    "instr": "Right trigger from corner to corner to draw",
+    "Questions": [
+        {
+            "type": "PD",
+            "title": "Create a [1, 0, 1] plane",
+            "Model": "D",
+            "correctPlane": [1,0,1]
+        },
+        {
+            "type": "PD",
+            "title": "Create a [0, 1, 0] plane",
+            "Model": "D",
+            "correctPlane": [0,1,0]
+        },
+        {
+            "type": "PD",
+            "title": "Create a [1, 1, 1] plane",
+            "Model": "D",
+            "correctPlane": [1,1,1]
+        }
+    ]
+}

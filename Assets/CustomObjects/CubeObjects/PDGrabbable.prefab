@@ -3505,7 +3505,7 @@ GameObject:
   - component: {fileID: 6741871745469306914}
   - component: {fileID: 6741162858844500909}
   m_Layer: 6
-  m_Name: SCGrabbableSmall
+  m_Name: PDGrabbable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
