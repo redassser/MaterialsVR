@@ -19,7 +19,7 @@ public class planeAdj : MonoBehaviour
         Vector3 initscale = transform.localScale;
 
         planeType = given;
-        locked = true;
+        Lock(true);
 
         if (CompareArrays(given, new int[3] { 1, 0, 0 })) {
             center = new Vector3(0.5f, 0f, 0f);
@@ -125,5 +125,12 @@ public class planeAdj : MonoBehaviour
             if (!a1[i].Equals(a2[i])) areEqual = false;
         }
         return areEqual;
+    }
+
+    public void Lock(bool isLock) {
+        this.locked = isLock;
+        for(int i=0;i<transform.Find("Atoms").childCount;i++) {
+            transform.Find("Atoms").GetChild(i).gameObject.SetActive(!isLock);
+        }
     }
 }

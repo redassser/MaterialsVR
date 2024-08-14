@@ -70,7 +70,7 @@ public class MenuManagerv5 : MonoBehaviour
                                 drawnLines.Add(workingLine);
                                 workingLine.GetPositions(points);
                                 workingLine.transform.GetComponentInParent<planeAdj>().RePlane(points);
-                                workingLine.transform.GetComponentInParent<planeAdj>().locked = true;
+                                workingLine.transform.GetComponentInParent<planeAdj>().Lock(true);
                                 workingLine.positionCount = 0;
                                 workingLine = null;
                             }
@@ -109,6 +109,8 @@ public class MenuManagerv5 : MonoBehaviour
 
     private void removeLastLine() {
         drawnLines[drawnLines.Count - 1].GetComponentInParent<MeshFilter>().mesh = null;
+        drawnLines[drawnLines.Count - 1].GetComponentInParent<planeAdj>().Lock(false);
+        drawnLines[drawnLines.Count - 1].GetComponentInParent<planeAdj>().planeType = new int[3] { 0, 0, 0 };
         drawnLines[drawnLines.Count - 1].loop = false;
         drawnLines.RemoveAt(drawnLines.Count - 1);
     } 
