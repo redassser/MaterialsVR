@@ -12,8 +12,9 @@ public class planeAdj : MonoBehaviour
     /// <param name="given">The miller indeces</param>
     public void Set(int[] given) {
         MeshFilter planeMesh = transform.Find("Plane").GetComponent<MeshFilter>();
-        Vector3 center = new Vector3();
-        Vector3 normal = new Vector3();
+        Vector3 center;
+        Vector3 normal;
+        float invert = 1f;
         Vector3 initpos = transform.position;
         Quaternion initrot = transform.rotation;
         Vector3 initscale = transform.localScale;
@@ -21,15 +22,13 @@ public class planeAdj : MonoBehaviour
         planeType = given;
         locked = true;
 
-        if (CompareArrays(given, new int[3] { 1, 0, 0 })) {
-            center = new Vector3(0.5f, 0f, 0f);
-            normal = new Vector3(1, 0, 0);
-        } else if (CompareArrays(given, new int[3] { 2, 1, 1 })) {
-            center = new Vector3(0f, 0f, -1f);
-            normal = new Vector3(2, 1, 1);
-        } else if (CompareArrays(given, new int[3] { 0, 0, 3 })) {
-            center = new Vector3(0f, -0.167f, 0f);
-            normal = new Vector3(0, 1, 0);
+        normal = new Vector3(given[0], given[2], given[1]);
+        center = new Vector3(0f, 0f, 0f); 
+        for (int i = 0; i < 3; i++) {
+            if(normal[i] != 0) {
+                if (normal[i] > 1) invert = -1f;
+                center[i] = ((1f / normal[i]) - 0.5f) * invert;
+            }
         }
 
         transform.position = Vector3.zero;
