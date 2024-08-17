@@ -1,0 +1,32 @@
+{
+    "oneTry": true,
+    "label": "For testing plane set",
+    "Questions": [
+        {
+            "type": "P",
+            "Model": "D",
+            "correctPlane": [1, 1, 0],
+            "options": [
+                {
+                    "Button": "A",
+                    "Text": "1 1 0",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 0
+        },
+        {
+            "type": "P",
+            "Model": "D",
+            "correctPlane": [-1, 1, 0],
+            "options": [
+                {
+                    "Button": "A",
+                    "Text": "-1 1 0",
+                    "Model": "None"
+                }
+            ],
+            "correctIndex": 0
+        }
+    ]
+}
