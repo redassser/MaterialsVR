@@ -15,7 +15,6 @@ public class planeAdj : MonoBehaviour
     /// </summary>
     /// <param name="given">The miller indeces</param>
     public void Set(int[] given) {
-        MeshFilter planeMesh;
         Vector3 center;
         Vector3 normal;
         Vector3 initpos = transform.position;
@@ -39,15 +38,14 @@ public class planeAdj : MonoBehaviour
         transform.localScale = Vector3.one;
 
         CreatePlane(normal, center);
-        planeMesh = planes[0].GetComponent<MeshFilter>();
+        
+        CombineInstance[] combine = new CombineInstance[planes.Count];
 
-        CombineInstance[] combine = new CombineInstance[1];
-
-        combine[0].mesh = planeMesh.sharedMesh;
-        combine[0].transform = planeMesh.transform.localToWorldMatrix;
-
-        foreach (GameObject plane in planes) {
-            plane.SetActive(false);
+        for (int i=0;i<planes.Count;i++) {
+            MeshFilter planeMesh = planes[i].GetComponent<MeshFilter>();
+            combine[i].mesh = planeMesh.sharedMesh;
+            combine[i].transform = planeMesh.transform.localToWorldMatrix;
+            planes[i].SetActive(false);
         }
 
         Mesh mesh = new Mesh();
@@ -67,7 +65,6 @@ public class planeAdj : MonoBehaviour
     public void RePlane(Vector3[] points)
     {
         Plane testPlane = new Plane();
-        MeshFilter planeMesh = transform.Find("Plane").GetComponent<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[1];
         float min = 0;
         int negnum = 0, nonzero = 0;
@@ -84,11 +81,11 @@ public class planeAdj : MonoBehaviour
 
         CreatePlane(testPlane.normal, points[0]);
 
-        combine[0].mesh = planeMesh.sharedMesh;
-        combine[0].transform = planeMesh.transform.localToWorldMatrix;
-
-        foreach(GameObject plane in planes) {
-            plane.SetActive(false);
+        for (int i = 0; i < planes.Count; i++) {
+            MeshFilter planeMesh = planes[i].GetComponent<MeshFilter>();
+            combine[i].mesh = planeMesh.sharedMesh;
+            combine[i].transform = planeMesh.transform.localToWorldMatrix;
+            planes[i].SetActive(false);
         }
 
         Mesh mesh = new Mesh();
@@ -117,15 +114,27 @@ public class planeAdj : MonoBehaviour
         }
     }
 
-    private void CreatePlane(Vector3 normal, Vector3 center) {
+    private void CreatePlane(Vector3 normal, Vector3 center, float interplanarDistance = 0.5f) {
         foreach(GameObject plane in planes) {
             Destroy(plane);
         }
         planes.Clear();
 
-        GameObject newPlane = Instantiate(planeObject, transform);
-        newPlane.transform.up = normal;
-        newPlane.transform.localPosition = center;
-        planes.Add(newPlane);
+        GameObject new1Plane = Instantiate(planeObject, transform);
+        new1Plane.transform.up = normal;
+        new1Plane.transform.localPosition = center;
+        planes.Add(new1Plane);
+
+        GameObject new2Plane = Instantiate(planeObject, transform);
+        new2Plane.transform.up = normal;
+        new2Plane.transform.localPosition = center;
+        new2Plane.transform.localPosition += normal * interplanarDistance;
+        planes.Add(new2Plane);
+
+        GameObject new3Plane = Instantiate(planeObject, transform);
+        new3Plane.transform.up = normal;
+        new3Plane.transform.localPosition = center;
+        new3Plane.transform.localPosition -= normal * interplanarDistance;
+        planes.Add(new3Plane);
     }
 }
