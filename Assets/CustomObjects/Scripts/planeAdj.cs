@@ -22,7 +22,7 @@ public class planeAdj : MonoBehaviour
         Vector3 initscale = transform.localScale;
 
         planeType = given;
-        locked = true;
+        Lock(true);
 
         normal = new Vector3(given[0], given[2], given[1]);
         center = new Vector3(-0.5f, -0.5f, -0.5f); 
@@ -149,6 +149,13 @@ public class planeAdj : MonoBehaviour
 
             if (iteration >= 0) iteration++;
             else iteration--;
+        }
+    }
+
+    public void Lock(bool isLock) {
+        this.locked = isLock;
+        for(int i=0;i<transform.Find("Atoms").childCount;i++) {
+            transform.Find("Atoms").GetChild(i).gameObject.SetActive(!isLock);
         }
     }
 }
