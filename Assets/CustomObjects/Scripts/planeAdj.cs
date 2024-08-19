@@ -122,6 +122,7 @@ public class planeAdj : MonoBehaviour
     /// <param name="center">Center point of middle plane</param>
     private void CreatePlane(Vector3 normal, Vector3 center) {
         float interplanarDistance = 1 / Mathf.Sqrt(Mathf.Pow(planeType[0],2) + Mathf.Pow(planeType[1], 2) + Mathf.Pow(planeType[2], 2));
+        center = ClosestPointToOrigin(normal, center);
         int iteration = 0;
         bool h = true;
 
@@ -132,7 +133,6 @@ public class planeAdj : MonoBehaviour
 
         while(h) {
             Vector3 newCenter = center + normal.normalized * interplanarDistance * iteration;
-            Debug.Log(newCenter[0] + " " + newCenter[1] + " " + newCenter[2]);
             for(int i=0;i<3;i++) {
                 if(Mathf.Abs(newCenter[i]) > 0.5 && iteration > 0) {
                     iteration = -1; newCenter = center + normal.normalized * interplanarDistance * iteration;
@@ -159,5 +159,12 @@ public class planeAdj : MonoBehaviour
         for(int i=0;i<transform.Find("Atoms").childCount;i++) {
             transform.Find("Atoms").GetChild(i).gameObject.SetActive(!isLock);
         }
+    }
+
+    private Vector3 ClosestPointToOrigin(Vector3 normal, Vector3 pointOnPlane) {
+        float total = normal.x * normal.x + normal.y * normal.y + normal.z * normal.z;
+        float dotProd = normal.x * pointOnPlane.x + normal.y * pointOnPlane.y + normal.z * pointOnPlane.z;
+        Vector3 point = -normal * dotProd / total;
+        return point;
     }
 }
