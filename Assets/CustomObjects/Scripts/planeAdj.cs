@@ -121,27 +121,34 @@ public class planeAdj : MonoBehaviour
     /// <param name="center">Center point of middle plane</param>
     private void CreatePlane(Vector3 normal, Vector3 center) {
         float interplanarDistance = 1 / Mathf.Sqrt(Mathf.Pow(planeType[0],2) + Mathf.Pow(planeType[1], 2) + Mathf.Pow(planeType[2], 2));
+        int iteration = 0;
+        bool h = true;
 
         foreach(GameObject plane in planes) {
             Destroy(plane);
         }
         planes.Clear();
 
-        GameObject new1Plane = Instantiate(planeObject, transform);
-        new1Plane.transform.up = normal;
-        new1Plane.transform.localPosition = center;
-        planes.Add(new1Plane);
+        while(h) {
+            Vector3 newCenter = center + normal.normalized * interplanarDistance * iteration;
+            for(int i=0;i<3;i++) {
+                if(newCenter[i] > 0.5) {
+                    iteration = -1; newCenter = center + normal.normalized * interplanarDistance * iteration;
+                    break;
+                } else if (newCenter[i] < -0.5) {
+                    h = false;
+                    break;
+                }
+            }
+            if (!h) break;
 
-        GameObject new2Plane = Instantiate(planeObject, transform);
-        new2Plane.transform.up = normal;
-        new2Plane.transform.localPosition = center;
-        new2Plane.transform.localPosition += normal.normalized * interplanarDistance;
-        planes.Add(new2Plane);
+            GameObject newPlane = Instantiate(planeObject, transform);
+            newPlane.transform.up = normal;
+            newPlane.transform.localPosition = newCenter;
+            planes.Add(newPlane);
 
-        GameObject new3Plane = Instantiate(planeObject, transform);
-        new3Plane.transform.up = normal;
-        new3Plane.transform.localPosition = center;
-        new3Plane.transform.localPosition -= normal.normalized * interplanarDistance;
-        planes.Add(new3Plane);
+            if (iteration >= 0) iteration++;
+            else iteration--;
+        }
     }
 }
