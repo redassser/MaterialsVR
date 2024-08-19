@@ -96,7 +96,6 @@ public class MenuManagerv5 : MonoBehaviour
         }
         else if (longHitUiSuccess) {
             setControllerLine(Color.green, new Vector3[] { rightCont.transform.position, longHitUi.point });
-            longHitUi.collider.transform.FindChildRecursive("Cursor").position = longHitUi.point;
 
             if (rightPressedR && longHitUiInteractSuccess) {
                 if (mm.PopupOnly && longHitUiInteract.collider.gameObject.tag != "popup") return;
