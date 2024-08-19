@@ -174,7 +174,6 @@ public class MainMenuContentManager : MonoBehaviour
             if (levelset.Questions[i].Model != "None") {
                 exampleObject = SpawnModel(levelset.Questions[i].Model);
                 if (levelset.Questions[i].type == "P") {
-                    Debug.Log("g");
                     exampleObject.GetComponent<planeAdj>().Set(levelset.Questions[i].correctPlane);
                 }
                 StartCoroutine(resetExample(exampleObject, temppanel.transform));

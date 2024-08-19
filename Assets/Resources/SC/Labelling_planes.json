@@ -80,7 +80,7 @@
             "options": [
                 { 
                     "Button": "A",
-                    "Text": "( 0 0 1/3 )",
+                    "Text": "( 0 0 3 )",
                     "Model": "None"
                 },
                 { 

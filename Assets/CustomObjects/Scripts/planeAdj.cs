@@ -1,19 +1,22 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class planeAdj : MonoBehaviour
 {
+    public GameObject planeObject;
+
     public int[] planeType = new int[3];
     private float[] planeNormal = new float[3];
     public bool locked;
+    public List<GameObject> planes = new List<GameObject>();
 
     /// <summary>
     /// Sets the plane to the given miller indeces
     /// </summary>
     /// <param name="given">The miller indeces</param>
     public void Set(int[] given) {
-        MeshFilter planeMesh = transform.Find("Plane").GetComponent<MeshFilter>();
-        Vector3 center = new Vector3();
-        Vector3 normal = new Vector3();
+        Vector3 center;
+        Vector3 normal;
         Vector3 initpos = transform.position;
         Quaternion initrot = transform.rotation;
         Vector3 initscale = transform.localScale;
@@ -21,29 +24,29 @@ public class planeAdj : MonoBehaviour
         planeType = given;
         Lock(true);
 
-        if (CompareArrays(given, new int[3] { 1, 0, 0 })) {
-            center = new Vector3(0.5f, 0f, 0f);
-            normal = new Vector3(1, 0, 0);
-        } else if (CompareArrays(given, new int[3] { 2, 1, 1 })) {
-            center = new Vector3(0f, 0f, -1f);
-            normal = new Vector3(2, 1, 1);
-        } else if (CompareArrays(given, new int[3] { 0, 0, 3 })) {
-            center = new Vector3(0f, -0.167f, 0f);
-            normal = new Vector3(0, 1, 0);
+        normal = new Vector3(given[0], given[2], given[1]);
+        center = new Vector3(-0.5f, -0.5f, -0.5f); 
+        for (int i = 0; i < 3; i++) {
+            if(normal[i] != 0) {
+                center[i] += (1f / normal[i]);
+                break;
+            }
         }
 
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
         transform.localScale = Vector3.one;
-        transform.Find("Plane").up = normal;
-        transform.Find("Plane").localPosition = center;
 
-        CombineInstance[] combine = new CombineInstance[1];
+        CreatePlane(normal, center);
+        
+        CombineInstance[] combine = new CombineInstance[planes.Count];
 
-        combine[0].mesh = planeMesh.sharedMesh;
-        combine[0].transform = planeMesh.transform.localToWorldMatrix;
-
-        transform.Find("Plane").gameObject.SetActive(false);
+        for (int i=0;i<planes.Count;i++) {
+            MeshFilter planeMesh = planes[i].GetComponent<MeshFilter>();
+            combine[i].mesh = planeMesh.sharedMesh;
+            combine[i].transform = planeMesh.transform.localToWorldMatrix;
+            planes[i].SetActive(false);
+        }
 
         Mesh mesh = new Mesh();
         mesh.CombineMeshes(combine);
@@ -61,8 +64,7 @@ public class planeAdj : MonoBehaviour
     /// <param name="points">Points on the cube</param>
     public void RePlane(Vector3[] points)
     {
-        Plane plane = new Plane();
-        MeshFilter planeMesh = transform.Find("Plane").GetComponent<MeshFilter>();
+        Plane testPlane = new Plane();
         CombineInstance[] combine = new CombineInstance[1];
         float min = 0;
         int negnum = 0, nonzero = 0;
@@ -73,16 +75,18 @@ public class planeAdj : MonoBehaviour
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
         transform.localScale = Vector3.one;
-       
-        plane.Set3Points(points[0], points[1], points[2]);
-        plane.normal.Set(plane.normal.x, plane.normal.y, plane.normal.z);
-        transform.Find("Plane").up = plane.normal;
-        transform.Find("Plane").localPosition = points[0];
 
-        combine[0].mesh = planeMesh.sharedMesh;
-        combine[0].transform = planeMesh.transform.localToWorldMatrix;
+        testPlane.Set3Points(points[0], points[1], points[2]);
+        testPlane.normal.Set(testPlane.normal.x, testPlane.normal.y, testPlane.normal.z);
 
-        transform.Find("Plane").gameObject.SetActive(false);
+        CreatePlane(testPlane.normal, points[0]);
+
+        for (int i = 0; i < planes.Count; i++) {
+            MeshFilter planeMesh = planes[i].GetComponent<MeshFilter>();
+            combine[i].mesh = planeMesh.sharedMesh;
+            combine[i].transform = planeMesh.transform.localToWorldMatrix;
+            planes[i].SetActive(false);
+        }
 
         Mesh mesh = new Mesh();
         mesh.CombineMeshes(combine);
@@ -93,9 +97,9 @@ public class planeAdj : MonoBehaviour
         transform.rotation = initrot;
         transform.localScale = initscale;
 
-        planeNormal[0] = plane.normal.x;
-        planeNormal[1] = plane.normal.z;
-        planeNormal[2] = plane.normal.y;
+        planeNormal[0] = testPlane.normal.x;
+        planeNormal[1] = testPlane.normal.z;
+        planeNormal[2] = testPlane.normal.y;
 
         for (int i=0;i<3;i++) { // GET non zero min
             if (planeNormal[i] < 0) negnum++;
@@ -111,20 +115,41 @@ public class planeAdj : MonoBehaviour
     }
 
     /// <summary>
-    /// Compares the values in two arrays
+    /// Creates a set of 3 parallel planes after deleteing any previous planes
     /// </summary>
-    /// <param name="a1">The first array to compare</param>
-    /// <param name="a2">The second array to compare</param>
-    /// <returns>True is all values are equal, false if not or different sizes</returns>
-    private bool CompareArrays(int[] a1, int[] a2) {
-        bool areEqual = true;
+    /// <param name="normal">Normal vector of the planes</param>
+    /// <param name="center">Center point of middle plane</param>
+    private void CreatePlane(Vector3 normal, Vector3 center) {
+        float interplanarDistance = 1 / Mathf.Sqrt(Mathf.Pow(planeType[0],2) + Mathf.Pow(planeType[1], 2) + Mathf.Pow(planeType[2], 2));
+        int iteration = 0;
+        bool h = true;
 
-        if (a1.Length != a2.Length) return false;
-
-        for (int i = 0; i < a1.Length; i++) {
-            if (!a1[i].Equals(a2[i])) areEqual = false;
+        foreach(GameObject plane in planes) {
+            Destroy(plane);
         }
-        return areEqual;
+        planes.Clear();
+
+        while(h) {
+            Vector3 newCenter = center + normal.normalized * interplanarDistance * iteration;
+            for(int i=0;i<3;i++) {
+                if(newCenter[i] > 0.5) {
+                    iteration = -1; newCenter = center + normal.normalized * interplanarDistance * iteration;
+                    break;
+                } else if (newCenter[i] < -0.5) {
+                    h = false;
+                    break;
+                }
+            }
+            if (!h) break;
+
+            GameObject newPlane = Instantiate(planeObject, transform);
+            newPlane.transform.up = normal;
+            newPlane.transform.localPosition = newCenter;
+            planes.Add(newPlane);
+
+            if (iteration >= 0) iteration++;
+            else iteration--;
+        }
     }
 
     public void Lock(bool isLock) {
