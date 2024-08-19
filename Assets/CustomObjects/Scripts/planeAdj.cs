@@ -114,7 +114,14 @@ public class planeAdj : MonoBehaviour
         }
     }
 
-    private void CreatePlane(Vector3 normal, Vector3 center, float interplanarDistance = 0.5f) {
+    /// <summary>
+    /// Creates a set of 3 parallel planes after deleteing any previous planes
+    /// </summary>
+    /// <param name="normal">Normal vector of the planes</param>
+    /// <param name="center">Center point of middle plane</param>
+    private void CreatePlane(Vector3 normal, Vector3 center) {
+        float interplanarDistance = 1 / Mathf.Sqrt(Mathf.Pow(planeType[0],2) + Mathf.Pow(planeType[1], 2) + Mathf.Pow(planeType[2], 2));
+
         foreach(GameObject plane in planes) {
             Destroy(plane);
         }
@@ -128,13 +135,13 @@ public class planeAdj : MonoBehaviour
         GameObject new2Plane = Instantiate(planeObject, transform);
         new2Plane.transform.up = normal;
         new2Plane.transform.localPosition = center;
-        new2Plane.transform.localPosition += normal * interplanarDistance;
+        new2Plane.transform.localPosition += normal.normalized * interplanarDistance;
         planes.Add(new2Plane);
 
         GameObject new3Plane = Instantiate(planeObject, transform);
         new3Plane.transform.up = normal;
         new3Plane.transform.localPosition = center;
-        new3Plane.transform.localPosition -= normal * interplanarDistance;
+        new3Plane.transform.localPosition -= normal.normalized * interplanarDistance;
         planes.Add(new3Plane);
     }
 }
