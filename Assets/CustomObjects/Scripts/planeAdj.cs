@@ -132,12 +132,12 @@ public class planeAdj : MonoBehaviour
 
         while(h) {
             Vector3 newCenter = center + normal.normalized * interplanarDistance * iteration;
-            Debug.Log(interplanarDistance+" fg ");
+            Debug.Log(newCenter[0] + " " + newCenter[1] + " " + newCenter[2]);
             for(int i=0;i<3;i++) {
-                if(newCenter[i] > 0.5) {
+                if(Mathf.Abs(newCenter[i]) > 0.5 && iteration > 0) {
                     iteration = -1; newCenter = center + normal.normalized * interplanarDistance * iteration;
                     break;
-                } else if (newCenter[i] < -0.5) {
+                } else if (Mathf.Abs(newCenter[i]) > 0.5 && iteration < 0) {
                     h = false;
                     break;
                 }
