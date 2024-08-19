@@ -65,7 +65,6 @@ public class planeAdj : MonoBehaviour
     public void RePlane(Vector3[] points)
     {
         Plane testPlane = new Plane();
-        CombineInstance[] combine = new CombineInstance[1];
         float min = 0;
         int negnum = 0, nonzero = 0;
         Vector3 initpos = transform.position;
@@ -79,7 +78,25 @@ public class planeAdj : MonoBehaviour
         testPlane.Set3Points(points[0], points[1], points[2]);
         testPlane.normal.Set(testPlane.normal.x, testPlane.normal.y, testPlane.normal.z);
 
+        planeNormal[0] = testPlane.normal.x;
+        planeNormal[1] = testPlane.normal.z;
+        planeNormal[2] = testPlane.normal.y;
+
+        for (int i = 0; i < 3; i++) { // GET non zero min
+            if (planeNormal[i] < 0) negnum++;
+            if (min == 0) min = Mathf.Abs(planeNormal[i]);
+            if (planeNormal[i] == 0) continue;
+            else nonzero++;
+            if (Mathf.Abs(min) > Mathf.Abs(planeNormal[i])) min = Mathf.Abs(planeNormal[i]);
+        }
+        for (int i = 0; i < 3; i++) { // ASSIGN PLANE TYPE
+            if (planeNormal[i] == 0.0) planeType[i] = 0;
+            else planeType[i] = (int)(planeNormal[i] / min);
+        }
+
         CreatePlane(testPlane.normal, points[0]);
+
+        CombineInstance[] combine = new CombineInstance[planes.Count];
 
         for (int i = 0; i < planes.Count; i++) {
             MeshFilter planeMesh = planes[i].GetComponent<MeshFilter>();
@@ -96,22 +113,6 @@ public class planeAdj : MonoBehaviour
         transform.position = initpos;
         transform.rotation = initrot;
         transform.localScale = initscale;
-
-        planeNormal[0] = testPlane.normal.x;
-        planeNormal[1] = testPlane.normal.z;
-        planeNormal[2] = testPlane.normal.y;
-
-        for (int i=0;i<3;i++) { // GET non zero min
-            if (planeNormal[i] < 0) negnum++;
-            if (min == 0) min = Mathf.Abs(planeNormal[i]);
-            if (planeNormal[i] == 0) continue;
-            else nonzero++;
-            if (Mathf.Abs(min) > Mathf.Abs(planeNormal[i])) min = Mathf.Abs(planeNormal[i]);
-        }
-        for (int i = 0; i < 3; i++) { // ASSIGN PLANE TYPE
-            if (planeNormal[i] == 0.0) planeType[i] = 0;
-            else planeType[i] = (int)(planeNormal[i] / min);
-        }
     }
 
     /// <summary>
@@ -131,6 +132,7 @@ public class planeAdj : MonoBehaviour
 
         while(h) {
             Vector3 newCenter = center + normal.normalized * interplanarDistance * iteration;
+            Debug.Log(interplanarDistance+" fg ");
             for(int i=0;i<3;i++) {
                 if(newCenter[i] > 0.5) {
                     iteration = -1; newCenter = center + normal.normalized * interplanarDistance * iteration;
