@@ -1,16 +1,41 @@
 # Materials VR
 
+## Setup for Unity development
+
+First, of course, you must install [Unity Hub](https://unity.com/download)
+
+### Unity Hub
+
+Sign into Unity Hub or create and account. Afterwards, skip installing the Unity editor. It installs the newest one, which is not what we use at the moment.
+Agree to Unity personal. It's free.
+Afterwards, go to the Unity [Archives](https://unity.com/releases/editor/archive), and install version 2022.3.22f1. It should open up the Unity Hub and give you some options.
+Make sure it installs Visual Studio 2022, also select Android Build Support (Quest runs android). Click continue and wait for download/install.
+
+### Repo
+
+Clone this repo somewhere you'll have easy access to.
+``git clone https://github.com/redassser/MaterialsVR``
+
+Once the Visual Studio and Unity Editor installs are done, under projects in Unity Hub, click Add in the top right and navigate to the cloned Repo.
+Let it open and decline any meta stuff.
+
+### Editor
+
+Once in the editor, select the scene called "Level 1" under Assets/Scenes to see the working scene.
+
+It should have all the packages already.
+
 ## Setup and Installation for Testing
 
 To begin, please activate developer mode on your Quest headset so that we may install external APKs.
 
-## Developer mode
+### Developer mode
 
 First, you must create an "Organization". It doesn't have to be official, any name works, it's just so you can enable developer mode. Do so [on the meta site](https://dashboard.oculus.com/organizations/create/). Make sure to log in!
 
 Second, open the Quest phone app, go to menu in the bottom right, select devices, then select the device you want to use. Then you can enable developer mode from there.
 
-## ADB
+### ADB
 
 Now to install ADB (Android Debugger) on your computer so you can install through USB. Download the platform tools [here on the android site](https://developer.android.com/tools/releases/platform-tools#downloads) by clicking on download SDK for Windows. Agree to the conditions and download.
 
@@ -23,7 +48,7 @@ Under System variables, please select Path, then click `Edit...`, then click New
 
 After that click through OKs until those windows are closed. Now you can use the ``adb`` command in the Windows Command Prompt, and setup is complete.
 
-## Installation
+### Installation
 
 To install the APK, first you must download it from the latest release here on the right of this page. Or [click here](https://github.com/redassser/MaterialsVR/releases) and download the latest build APK file.
 
