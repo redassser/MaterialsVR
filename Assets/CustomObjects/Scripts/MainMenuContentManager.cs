@@ -174,7 +174,8 @@ public class MainMenuContentManager : MonoBehaviour
             if (levelset.Questions[i].Model != "None") {
                 exampleObject = SpawnModel(levelset.Questions[i].Model);
                 if (levelset.Questions[i].type == "P") {
-                    exampleObject.GetComponent<planeAdj>().Set(levelset.Questions[i].correctPlane);
+                    int[] p = levelset.Questions[i].correctPlane;
+                    exampleObject.GetComponent<planeAdj>().Set(new Vector3(p[0],p[1],p[2]));
                 }
                 StartCoroutine(resetExample(exampleObject, temppanel.transform));
                 qExamples.Add(exampleObject);
@@ -228,7 +229,7 @@ public class MainMenuContentManager : MonoBehaviour
         if (oneTry && qcorrect[qi][pi] != -1) return;
         int correcti = levelset.Questions[pi].correctIndex;
         if (h != null) {
-            int[] ints = h.planeType;
+            Vector3 ints = h.planeType;
             int[] currentCorrectPlane = levelset.Questions[pi].correctPlane;
             UnityEngine.UI.Image button = qHolders[pi].transform.GetChild(0).GetChild(0).GetChild(0).GetChild(opi).GetComponent<UnityEngine.UI.Image>();
             if ((currentCorrectPlane[0] == ints[0] && currentCorrectPlane[1] == ints[1] && currentCorrectPlane[2] == ints[2]) ||

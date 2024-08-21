@@ -43,48 +43,53 @@ public class MenuManagerv5 : MonoBehaviour
         if (rightPressedB && drawnLines.Count > 0) {
             removeLastLine();
         }
-        if (shortHitDrawSuccess) {
+
+        // Set line colors
+        if(startedDraw || (shortHitDrawSuccess && rightPressedR)) {
             setControllerLine(Color.yellow, new Vector3[] { rightCont.transform.position, rightCont.transform.position + rightCont.transform.forward * 0.2f });
-
+        } else if(shortHitDrawSuccess) {
+            setControllerLine(Color.green, new Vector3[] { rightCont.transform.position, rightCont.transform.position + rightCont.transform.forward * 0.2f });
             workingLine = shortHitDraw.collider.GetComponentInParent<LineRenderer>();
+        } else if (longHitUiSuccess) {
+            setControllerLine(Color.green, new Vector3[] { rightCont.transform.position, longHitUi.point });
+        } else {
+            setControllerLine(Color.white, new Vector3[] { rightCont.transform.position, rightCont.transform.position + rightCont.transform.forward * 0.2f });
+        }
 
-            if (rightPressedR) {
-                if (shortHitDraw.collider.transform.parent.GetComponentInParent<planeAdj>().locked) {
-                    setControllerLine(Color.red, new Vector3[] { });
-                    workingLine = null;
-                } 
-                else if (workingLine.positionCount == 0) {
-                    startedDraw = true;
-                    workingLine.positionCount = 2;
-                    workingLine.SetPosition(0, shortHitDraw.collider.transform.localPosition);
-                    workingLine.SetPosition(1, shortHitDraw.collider.transform.localPosition);
-                } else {
-                    for (int i = 0; i < workingLine.positionCount; i++) {
-                        if (workingLine.GetPosition(i) == shortHitDraw.collider.transform.localPosition) {
-                            if (workingLine.positionCount == 4) {
-                                Vector3[] points = new Vector3[3];
-                                startedDraw = false;
-                                workingLine.positionCount--;
-                                workingLine.SetPosition(workingLine.positionCount - 1, shortHitDraw.collider.transform.localPosition);
-                                workingLine.loop = true;
-                                drawnLines.Add(workingLine);
-                                workingLine.GetPositions(points);
-                                workingLine.transform.GetComponentInParent<planeAdj>().RePlane(points);
-                                workingLine.transform.GetComponentInParent<planeAdj>().Lock(true);
-                                workingLine.positionCount = 0;
-                                workingLine = null;
-                            }
-                            return;
-                        }
+        // Holding Trigger on a Unit block corner block thing
+        if(shortHitDrawSuccess && rightPressedR) {
+            if (shortHitDraw.collider.transform.parent.GetComponentInParent<planeAdj>().isLocked()) {
+                setControllerLine(Color.red, new Vector3[] { });
+                workingLine = null;
+            } else if (workingLine.positionCount == 0) {
+                startedDraw = true;
+                workingLine.positionCount = 2;
+                workingLine.SetPosition(0, shortHitDraw.collider.transform.localPosition);
+                workingLine.SetPosition(1, shortHitDraw.collider.transform.localPosition);
+            } else {
+                if (workingLine.GetPosition(workingLine.positionCount - 2) == shortHitDraw.collider.transform.localPosition) {
+                    if (workingLine.positionCount == 4) {
+                        Vector3[] points = new Vector3[3];
+                        startedDraw = false;
+                        workingLine.positionCount--;
+                        workingLine.SetPosition(workingLine.positionCount - 1, shortHitDraw.collider.transform.localPosition);
+                        workingLine.loop = true;
+                        drawnLines.Add(workingLine);
+                        workingLine.GetPositions(points);
+                        workingLine.transform.GetComponentInParent<planeAdj>().RePlane(points);
+                        workingLine.transform.GetComponentInParent<planeAdj>().Lock(true);
+                        workingLine.positionCount = 0;
+                        workingLine = null;
                     }
-                    workingLine.positionCount++;
-                    workingLine.SetPosition(workingLine.positionCount - 1, workingLine.transform.InverseTransformPoint(rightCont.transform.position + rightCont.transform.forward * 0.2f));
-                    workingLine.SetPosition(workingLine.positionCount - 2, shortHitDraw.collider.transform.localPosition);
+                    return;
                 }
-            } else if (startedDraw) {
-                startedDraw = false;
-                workingLine.positionCount = 0;
+                workingLine.positionCount++;
+                workingLine.SetPosition(workingLine.positionCount - 1, workingLine.transform.InverseTransformPoint(rightCont.transform.position + rightCont.transform.forward * 0.2f));
+                workingLine.SetPosition(workingLine.positionCount - 2, shortHitDraw.collider.transform.localPosition);
             }
+        } else if (shortHitDrawSuccess && startedDraw) {
+            startedDraw = false;
+            workingLine.positionCount = 0;
         } else if (startedDraw) {
             line.SetPositions(new Vector3[] { rightCont.transform.position, rightCont.transform.position + rightCont.transform.forward * 0.2f });
             if (OVRInput.Get(OVRInput.RawButton.RIndexTrigger)) {
@@ -93,23 +98,16 @@ public class MenuManagerv5 : MonoBehaviour
                 startedDraw = false;
                 workingLine.positionCount = 0;
             }
-        }
-        else if (longHitUiSuccess) {
-            setControllerLine(Color.green, new Vector3[] { rightCont.transform.position, longHitUi.point });
-
-            if (rightPressedR && longHitUiInteractSuccess) {
-                if (mm.PopupOnly && longHitUiInteract.collider.gameObject.tag != "popup") return;
-                UnityEngine.EventSystems.ExecuteEvents.Execute(longHitUiInteract.collider.gameObject, new UnityEngine.EventSystems.BaseEventData(UnityEngine.EventSystems.EventSystem.current), UnityEngine.EventSystems.ExecuteEvents.submitHandler);
-            }
-        } else {
-            setControllerLine(Color.white, new Vector3[] { rightCont.transform.position, rightCont.transform.position + rightCont.transform.forward * 0.2f });
-        }
+        } else if (longHitUiInteractSuccess && rightPressedR) {
+            if (mm.PopupOnly && longHitUiInteract.collider.gameObject.tag != "popup") return;
+            UnityEngine.EventSystems.ExecuteEvents.Execute(longHitUiInteract.collider.gameObject, new UnityEngine.EventSystems.BaseEventData(UnityEngine.EventSystems.EventSystem.current), UnityEngine.EventSystems.ExecuteEvents.submitHandler);
+        } 
     }
 
     private void removeLastLine() {
         drawnLines[drawnLines.Count - 1].GetComponentInParent<MeshFilter>().mesh = null;
         drawnLines[drawnLines.Count - 1].GetComponentInParent<planeAdj>().Lock(false);
-        drawnLines[drawnLines.Count - 1].GetComponentInParent<planeAdj>().planeType = new int[3] { 0, 0, 0 };
+        drawnLines[drawnLines.Count - 1].GetComponentInParent<planeAdj>().planeType = new Vector3(0,0,0);
         drawnLines[drawnLines.Count - 1].loop = false;
         drawnLines.RemoveAt(drawnLines.Count - 1);
     } 
